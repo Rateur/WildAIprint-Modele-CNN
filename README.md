@@ -1,93 +1,154 @@
-# WildAIprint
-
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.com/vperies-group/wildaiprint.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.com/vperies-group/wildaiprint/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
+# WildAIprint – Modèle IA
 
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Ce dépôt contient tout ce qui concerne le **modèle IA** utilisé par l’application WildAIprint :
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+- le notebook d’entraînement du modèle CNN pré-entraîné (`pretrained_cnn_model.ipynb`),
+- le **dataset** (13 classes d’animaux, ~250 images d’empreintes),
+- le modèle entraîné exporté au format `.keras`.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Ce modèle est ensuite intégré au back-end Flask du dépôt [WildAIprintApp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp.git).
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+---
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## Table des matières
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- [Documentation complète](#documentation-complète)
+- [Structure du dépôt](#structure-du-dépôt)
+- [Dataset](#dataset)
+- [Architecture du modèle](#architecture-du-modèle)
+- [Entraînement et fine-tuning](#entrainement-et-fine-tuning)
+- [Résultats et évaluation](#resultats-et-evaluation)
+- [Export et intégration](#export-et-intégration)
+- [Licences et crédits](#licences-et-crédits)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+---
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Documentation complète
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Consulter la documentation complète du projet (données, modèle IA, fine-tuning, résultats, architecture) :  
+[WildAIprint Documentation Projet](https://www.notion.so/WildAIprint-Documentation-Projet-261b73b4f1d480ed8a6ef05ea84e85f3?source=copy_link)
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+---
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Structure du dépôt
+```
+/
+├── pretrained_cnn_model.ipynb # Notebook d'entraînement du modèle ResNet50 + fine-tuning
+├── dataset/ # Dossier contenant les images d’empreintes (13 classes)
+│ ├── Castor/
+│ ├── Chat/
+│ ├── Chien/
+│ ├── Coyote/
+│ ├── Ecureuil/
+│ ├── Lapin/
+│ ├── Loup/
+│ ├── Lynx/
+│ ├── Ours/
+│ ├── Puma/
+│ ├── Rat/
+│ ├── Raton_laveur/
+│ └── Renard/
+└── model.keras # Modèle entraîné exporté
+```
 
-## License
-For open source projects, say how it is licensed.
+---
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## Dataset
+
+- **13 classes** : Castor, Chat, Chien, Coyote, Écureuil, Lapin, Loup, Lynx, Ours, Puma, Rat, Raton laveur, Renard.
+- **250 images** au total, réparties dans les sous-dossiers par espèce.
+- **Images nettoyées** (suppression doublons et fichiers corrompus) et prétraitées avant l’entraînement.
+- **Pipeline de data augmentation** appliqué au chargement pour enrichir artificiellement le dataset.
+
+---
+
+## Architecture du modèle
+
+- **Backbone :** ResNet50 pré-entraîné sur ImageNet, `include_top=False`.
+- **Entrée :** `Input(shape=(256,256,3))` → pipeline de data augmentation → ResNet50.
+- **Tête personnalisée :**
+  - `GlobalAveragePooling2D`
+  - `Dropout(0.5)`
+  - `Dense(128, activation='relu')`
+  - `Dropout(0.3)`
+  - `Dense(num_classes, activation='softmax')` (classification multiclasse)
+
+<details><summary>Code modèle</summary>
+
+```python
+inputs = Input(shape=(256, 256, 3))
+x = data_augmentation(inputs)
+base_model = ResNet50(weights='imagenet', include_top=False, input_tensor=x)
+base_model.trainable = False
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dropout(0.5)(x)
+x = Dense(128, activation='relu')(x)
+x = Dropout(0.3)(x)
+predictions = Dense(num_classes, activation='softmax')(x)
+model = Model(inputs=inputs, outputs=predictions)
+```
+</details>
+
+## Entraînement et fine-tuning
+* **Framework** : `TensorFlow/Keras`.
+* **Input size** : 256×256 px, `Batch size` : 16.
+* **Optimiseur** : `Adam`, Perte : `categorical crossentropy`.
+* **Métriques** : `accuracy`, `precision`, `recall`, `F1-score`.
+* Phase 1 : entraînement avec `backbone` gelé.
+* Phase 2 : `fine-tuning` – dégel progressif des couches du `backbone`, taux d’apprentissage réduit, `early-stopping`.
+
+<details><summary>Code fine-tuning</summary>
+
+```python
+base_model.trainable = True
+
+# Only the final layers are fine-tuned.
+for layer in base_model.layers[:-30]:
+    layer.trainable = False
+
+model.compile(optimizer=Adam(learning_rate=1e-5),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Retraining
+history_finetune = model.fit(
+    train_ds,
+    validation_data=validation_ds,
+    epochs=20,
+    callbacks=[early_stop],
+    verbose=1
+)
+```
+</details>
+
+## Résultats et évaluation
+* `Accuracy` **de validation** : 0.83
+* Courbes d’`accuracy` et de `loss` : progression régulière et parallèle (bonne généralisation).
+* Matrice de confusion et rapport de classification : bonnes performances globales, quelques classes plus difficiles (Castor, Raton laveur, Chat).
+
+<details><summary>Courbes d’accuracy</summary>
+
+![](https://imgur.com/Nb0OGSx.png)
+</details>
+
+<details><summary>Courbes de loss</summary>
+
+![](https://imgur.com/VHFeAP8.png)
+</details>
+
+<details><summary>Matrice de confusion</summary>
+
+![](https://imgur.com/GH3XmAz.png)
+</details>
+
+## Export et intégration
+* Modèle exporté au format `.keras` (`model.keras`).
+* Utilisé par l’API Flask du dépôt [WildAIprintApp](https://www.notion.so/WildAIprint-Documentation-Projet-261b73b4f1d480ed8a6ef05ea84e85f3?source=copy_link) pour servir les prédictions.
+* Pipeline pré/post-traitement identique entre entraînement et inférence pour cohérence.
+
+## Licences et crédits
+* Code : Licence MIT (Exemple)
+* Images, dataset : WildAIprint + sources (NatureTracking, iNaturalist, etc.)
+* Remerciements à l’équipe pédagogique et à tous les contributeurs
