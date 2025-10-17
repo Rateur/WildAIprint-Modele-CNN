@@ -1,0 +1,19 @@
+# Données et artefacts lourds
+dataset/
+model.keras
+class_names.json
+mlruns/
+outputs/
+
+# Environnements et caches
+.venv/
+env/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Outils & IDE
+.DS_Store
+.vscode/
+.idea/
