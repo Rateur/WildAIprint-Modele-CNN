@@ -1,10 +1,9 @@
-# WildAIprint – Modèle IA
-
 <div id="top"></div>
 
-<p align="center">
-  <img src="https://imgur.com/y9j7iMy.png" alt="WildAIprint logo" width="420">
-</p>
+<h1 align="center">
+  <img src="https://imgur.com/y9j7iMy.png" alt="WildAIprint logo" width="96" style="vertical-align: middle; margin-right: 12px;">
+  WildAIprint – Modèle IA
+</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Simplon%20x%20Microsoft-D%C3%A9veloppeur%20IA-ee2e5d?style=for-the-badge" alt="Simplon x Microsoft – Développeur IA">
@@ -104,7 +103,74 @@
 
 ## <a id="dataset"></a>Dataset & préparation
 
-- 13 classes d’animaux (empreintes) : Castor, Chat, Chien, Coyote, Écureuil, Lapin, Loup, Lynx, Ours, Puma, Rat, Raton laveur, Renard.
+- 13 classes d’animaux (empreintes) :
+
+  <table align="center">
+    <tr>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/American_Beaver.jpg" alt="Castor" width="90" loading="lazy"><br>
+        <sub><strong>Castor</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/1200px-Cat_August_2010-4.jpg" alt="Chat" width="90" loading="lazy"><br>
+        <sub><strong>Chat</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Huskiesatrest.jpg/1200px-Huskiesatrest.jpg" alt="Chien" width="90" loading="lazy"><br>
+        <sub><strong>Chien</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/2009-Coyote-Yosemite.jpg" alt="Coyote" width="90" loading="lazy"><br>
+        <sub><strong>Coyote</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/68/Sciuridae.jpg" alt="Écureuil" width="90" loading="lazy"><br>
+        <sub><strong>Écureuil</strong></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Oryctolagus_cuniculus_Rcdo.jpg/969px-Oryctolagus_cuniculus_Rcdo.jpg" alt="Lapin" width="90" loading="lazy"><br>
+        <sub><strong>Lapin</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Eurasian_wolf_2.jpg/1200px-Eurasian_wolf_2.jpg" alt="Loup" width="90" loading="lazy"><br>
+        <sub><strong>Loup</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Lynx_heads_collage.jpg" alt="Lynx" width="90" loading="lazy"><br>
+        <sub><strong>Lynx</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Ours_brun_parcanimalierpyrenees_1.jpg" alt="Ours" width="90" loading="lazy"><br>
+        <sub><strong>Ours</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Mountain_Lion_in_Glacier_National_Park.jpg/1200px-Mountain_Lion_in_Glacier_National_Park.jpg" alt="Puma" width="90" loading="lazy"><br>
+        <sub><strong>Puma</strong></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Brown_Rat_%28Rattus_norvegicus%29.jpg/1200px-Brown_Rat_%28Rattus_norvegicus%29.jpg" alt="Rat" width="90" loading="lazy"><br>
+        <sub><strong>Rat</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Raccoon_in_Central_Park_%2835264%29.jpg/1200px-Raccoon_in_Central_Park_%2835264%29.jpg" alt="Raton laveur" width="90" loading="lazy"><br>
+        <sub><strong>Raton laveur</strong></sub>
+      </td>
+      <td align="center" width="120">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Vulpes_vulpes_ssp_fulvus.jpg/1200px-Vulpes_vulpes_ssp_fulvus.jpg" alt="Renard" width="90" loading="lazy"><br>
+        <sub><strong>Renard</strong></sub>
+      </td>
+      <td align="center" width="120">
+        &nbsp;
+      </td>
+      <td align="center" width="120">
+        &nbsp;
+      </td>
+    </tr>
+  </table>
 - 1 500 images après nettoyage automatique :
   - suppression des fichiers corrompus,
   - détection de doublons via hash MD5,
@@ -121,13 +187,6 @@
 | Écureuil | 114 | Renard | 132 |
 | Lapin | 66 | Loup | 108 |
 | Lynx | 144 | **Total** | **1 500** |
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Rateur/WildAIprint-Modele-CNN/main/dataset/Castor/Beaver-Track.jpg" alt="Empreinte de castor" width="130">
-  <img src="https://raw.githubusercontent.com/Rateur/WildAIprint-Modele-CNN/main/dataset/Lynx/Bobcat-Tracks-3.jpg" alt="Empreinte de lynx" width="130">
-  <img src="https://raw.githubusercontent.com/Rateur/WildAIprint-Modele-CNN/main/dataset/Ours/Black-Bear-Track.jpg" alt="Empreinte d’ours" width="130">
-  <img src="https://raw.githubusercontent.com/Rateur/WildAIprint-Modele-CNN/main/dataset/Renard/Gray-Fox-Track.jpg" alt="Empreinte de renard" width="130">
-</p>
 
 > 📁 Les images sont stockées dans `dataset/<classe>/*.jpg|.png`.  
 > Une structure cohérente est indispensable pour reproduire l’entraînement (split 80/20 avec graine fixe).
@@ -222,14 +281,50 @@ pip install -r requirements.txt    # si vous générez un fichier de dépendance
 
 ```
 /
+├── .gitignore                 # Ignorer les artefacts lourds et temporaires
 ├── modeling.ipynb              # CNN personnalisé + suivi MLflow
 ├── pretrained_cnn_model.ipynb  # Fine-tuning ResNet50
-├── dataset/                    # Images d’empreintes (13 classes)
-│   ├── Castor/
-│   ├── ...
-│   └── Renard/
-├── model.keras                 # Modèle entraîné (export Keras)
-└── class_names.json            # Mapping des classes (généré après entraînement)
+├── dataset/                    # Images d’empreintes (ignorées par Git, à placer localement)
+├── model.keras                 # Modèle entraîné (généré après entraînement, hors suivi Git)
+└── class_names.json            # Mapping des classes (généré après entraînement, hors suivi Git)
+```
+
+<p align="right"><a href="#top">Retour en haut</a></p>
+
+---
+
+### Fichiers ignorés (.gitignore)
+
+Pour alléger le dépôt, le fichier `.gitignore` exclut les dossiers et artefacts volumineux générés pendant les entraînements :
+
+```gitignore
+# Données et artefacts lourds
+dataset/
+model.keras
+class_names.json
+mlruns/
+outputs/
+
+# Environnements et caches
+.venv/
+env/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Outils & IDE
+.DS_Store
+.vscode/
+.idea/
+```
+
+Après avoir mis à jour le `.gitignore`, exécutez les commandes suivantes pour retirer les gros fichiers déjà suivis :
+
+```bash
+git rm -r --cached dataset
+git rm --cached model.keras class_names.json  # Ignore si ces fichiers n'existent pas encore
+git commit -m "Nettoie les artefacts lourds hors Git"
 ```
 
 <p align="right"><a href="#top">Retour en haut</a></p>
