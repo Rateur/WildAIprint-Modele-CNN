@@ -17,7 +17,7 @@
 
 > La documentation du projet est répartie sur deux README complémentaires :
 > - **Ce dépôt** pour l’entraînement du modèle IA.
-> - **WildAIprint App** pour l’application Front/Back : [github.com/Rateur/wildaiprint-App](https://github.com/Rateur/wildaiprint-App).
+> - **WildAIprint App** (Front/Back) : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp)
 
 ---
 
@@ -42,7 +42,7 @@
 - **WildAIprint** est un modèle de vision par ordinateur capable de reconnaître 13 espèces à partir de photos d’empreintes animalières.
 - Il alimente l’API Flask du projet compagnon *WildAIprintApp* pour fournir des prédictions en temps réel.
 - Ce dépôt se concentre sur la partie **IA / data** : nettoyage du dataset, entraînement, évaluation et export du modèle.
-- L’application web associée (interface utilisateur) est disponible ici : [github.com/Rateur/wildaiprint-App](https://github.com/Rateur/wildaiprint-App).
+- L’application web associée (interface utilisateur) est disponible ici : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
 - Livrables clés :
   - `model.keras` (poids entraînés),
   - `class_names.json` (ordre des classes pour l’inférence),
