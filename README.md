@@ -12,12 +12,12 @@
 
 <p align="center">
   Modèle de classification d’empreintes animales pour la webapp WildAIprint.<br>
-  Réalisé dans le cadre de ma formation <strong>Simplon x Microsoft – Développeur IA</strong>.
+  Projet collaboratif réalisé dans le cadre de la formation <strong>Simplon x Microsoft – Développeur IA</strong>.
 </p>
 
-> La documentation du projet est répartie sur deux README complémentaires :
-> - **Ce dépôt** pour l’entraînement du modèle IA.
-> - **WildAIprint App** (Front/Back) : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp)
+> La documentation du projet est répartie sur deux dépôts complémentaires :
+> - **Ce dépôt** (Valentin Périès) : notebooks d’expérimentation, monitoring MLflow, pipeline data et modèle IA.
+> - **WildAIprint App** (Front/Back) : [https://github.com/Rateur/wildaiprint-App](https://github.com/Rateur/wildaiprint-App)
 
 ---
 
@@ -25,6 +25,7 @@
 1. [À propos](#a-propos)  
    1.1. [Pitch & objectifs](#pitch)  
    1.2. [Contexte pédagogique](#contexte)  
+   1.3. [Équipe & attribution des contributions](#equipe)  
 2. [Technologies & outils](#technologies)  
 3. [Dataset & préparation](#dataset)  
 4. [Architecture IA](#architecture)  
@@ -39,19 +40,31 @@
 ## <a id="a-propos"></a>À propos
 
 ### <a id="pitch"></a>Pitch & objectifs
-- **WildAIprint** est un modèle de vision par ordinateur capable de reconnaître 13 espèces à partir de photos d’empreintes animalières.
-- Il alimente l’API Flask du projet compagnon *WildAIprintApp* pour fournir des prédictions en temps réel.
-- Ce dépôt se concentre sur la partie **IA / data** : nettoyage du dataset, entraînement, évaluation et export du modèle.
-- L’application web associée (interface utilisateur) est disponible ici : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
+- **WildAIprint** est un système de vision par ordinateur capable de reconnaître 13 espèces fauniques à partir de photographies d’empreintes animales.
+- Il alimente l’API Flask du projet compagnon *WildAIprintApp* pour fournir des prédictions en temps réel sur le terrain.
+- Ce dépôt se concentre sur la dimension **IA / data engineering** : nettoyage du dataset, expérimentations de modélisation, évaluation comparative et export des artefacts d’inférence.
+- L’application web complète (interface utilisateur & API) est hébergée sur GitLab : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
 - Livrables clés :
-  - `model.keras` (poids entraînés),
-  - `class_names.json` (ordre des classes pour l’inférence),
-  - deux notebooks reproductibles couvrant les scénarios *from scratch* et transfert d’apprentissage.
+  - `model.keras` (poids du modèle retenu),
+  - `class_names.json` (ordre des classes pour l’inférence Flask),
+  - deux notebooks documentés couvrant le transfert d’apprentissage ResNet50 et l’expérimentation CNN from scratch avec MLflow.
 
 ### <a id="contexte"></a>Contexte pédagogique
-- Projet mené dans le cadre de la formation **Simplon x Microsoft – Développeur IA**.
-- Objectif pédagogique : démontrer la maîtrise d’un pipeline de Deep Learning de bout en bout (data engineering, fine-tuning, monitoring).
-- Le modèle entraîne un jeu de données propriétaire (~1 500 images) et illustre la mise en production d’un modèle Keras dans un environnement Flask.
+- Projet mené en équipe dans le cadre de la formation **Simplon x Microsoft – Développeur IA**.
+- Objectif pédagogique : concevoir, entraîner et déployer un pipeline de Deep Learning complet de bout en bout (data engineering, fine-tuning, tracking d’expériences, conteneurisation).
+- Le modèle est entraîné sur un jeu de données de ~1 500 images d'empreintes et illustre la mise en production d’un modèle TensorFlow/Keras dans un microservice Flask conteneurisé.
+
+### <a id="equipe"></a>Équipe & attribution des contributions
+Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
+
+| Contributeur | Profil GitHub | Rôles & Contributions principales |
+|---|---|---|
+| **Yasmine Sayad** | [@YasmineSAYAD](https://github.com/YasmineSAYAD) | **Conception & entraînement du modèle ResNet50 retenu pour la production** (Transfer Learning & Fine-Tuning en 2 phases, meilleure accuracy de validation à 0,83). Pilotage du dépôt applicatif principal. |
+| **Valentin Périès** | [@Rateur](https://github.com/Rateur) | **Data engineering & pipeline d’expérimentation** : nettoyage automatique et déduplication MD5 du dataset, modélisation CNN custom avec suivi des runs sous MLflow (`modeling.ipynb`), packaging des artefacts (`model.keras`, `class_names.json`) et intégration de l’inférence locale Flask. |
+| **Valentin Phan** | [@ValentinPhan](https://github.com/ValentinPhan) | Exploration des hyperparamètres, tests d'augmentation de données et évaluation comparative des métriques. |
+| **Brunel** | [@Brunel-ops](https://github.com/Brunel-ops) | Préparation des jeux de données, tests de robustesse et benchmarking des temps d'inférence. |
+
+> 📌 **Précision d'attribution** : Plusieurs architectures ont été expérimentées en parallèle par les membres de l’équipe. Le modèle final sélectionné pour l’application web est l'architecture **ResNet50 développée par Yasmine Sayad** (`pretrained_cnn_model.ipynb`). Le présent dépôt personnel documente les notebooks d’entraînement, l'instrumentation MLflow et les étapes de data engineering associées.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -93,14 +106,14 @@
     </td>
     <td align="center" width="120">
       <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" alt="Git" height="48"><br>
-      <sub><strong>Git & GitLab</strong></sub>
+      <sub><strong>Git & GitHub</strong></sub>
     </td>
   </tr>
 </table>
 
-- **Suivi des expériences** : MLflow (autolog activé dans `modeling.ipynb`).
-- **Traitement d’images** : Pillow pour le nettoyage, générateurs Keras pour l’augmentation.
-- **Stack déploiement** : export `.keras` pour intégration Flask + fichier JSON de mapping classes.
+- **Suivi des expériences** : MLflow (autolog activé dans `modeling.ipynb`, suivi des paramètres et courbes loss/accuracy).
+- **Traitement d’images** : Pillow pour le nettoyage et l'audit d'intégrité, couches Keras pour l’augmentation à la volée.
+- **Stack déploiement** : export `.keras` + `class_names.json` pour intégration dans l'API Flask de *WildAIprintApp*.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -178,10 +191,10 @@
   </table>
 - 1 500 images après nettoyage automatique :
   - suppression des fichiers corrompus,
-  - détection de doublons via hash MD5,
+  - détection et suppression des doublons via hachage MD5,
   - génération d’images augmentées (rotation, symétrie, zoom, bruit, luminosité).
-- Les labels sont inférés directement depuis la structure des dossiers (`image_dataset_from_directory`).
-- L’augmentation en ligne (RandomFlip, RandomZoom, RandomBrightness…) complète l’enrichissement offline pour améliorer la généralisation.
+- Les labels sont inférés directement depuis la structure des répertoires (`image_dataset_from_directory`).
+- L’augmentation en ligne (RandomFlip, RandomZoom, RandomBrightness…) complète l’enrichissement offline pour améliorer l'invariance et la généralisation.
 
 | Classe | Images | Classe | Images |
 |--------|--------|--------|--------|
@@ -193,8 +206,8 @@
 | Lapin | 66 | Loup | 108 |
 | Lynx | 144 | **Total** | **1 500** |
 
-> 📁 Les images sont stockées dans `dataset/<classe>/*.jpg|.png`.  
-> Une structure cohérente est indispensable pour reproduire l’entraînement (split 80/20 avec graine fixe).
+> 📁 Les images sont organisées dans `dataset/<classe>/*.jpg|.png`.  
+> Le partitionnement reproductible utilise un split 80% entraînement / 20% validation avec une graine fixe (seed 12, batch 16).
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -202,17 +215,18 @@
 
 ## <a id="architecture"></a>Architecture IA
 
+Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** pré-entraîné (développé par Yasmine Sayad) :
 - **Backbone** : ResNet50 pré-entraîné sur ImageNet (`include_top=False`).
 - **Entrée** : images RGB redimensionnées en 256×256, normalisées et augmentées à la volée.
 - **Tête personnalisée** :
   - `GlobalAveragePooling2D`,
   - `Dropout(0.5)` + `Dense(128, relu)` + `Dropout(0.3)`,
-  - `Dense(num_classes, softmax)` pour la classification multiclasse.
-- **Optimisation** :
-  - Phase 1 : backbone gelé, entraînement de la tête seulement (`Adam`, `lr=1e-3`).
-  - Phase 2 : fine-tuning contrôlé (dégel des 30 dernières couches, `lr=1e-5`, `EarlyStopping`).
+  - `Dense(num_classes, softmax)` pour la classification multiclasse (13 classes).
+- **Optimisation en deux phases** :
+  - Phase 1 : backbone gelé, entraînement de la tête seule (`Adam`, `lr=1e-3`).
+  - Phase 2 : fine-tuning contrôlé avec dégel des 30 dernières couches de ResNet50 (`lr=1e-5`, callback `EarlyStopping`).
 - **Suivi des métriques** : accuracy, loss, precision, recall, F1-score (macro) et matrice de confusion.
-- **Export** : sauvegarde du modèle Keras + écriture du fichier `class_names.json`.
+- **Export** : sauvegarde des poids dans `model.keras` + génération de `class_names.json`.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -220,17 +234,17 @@
 
 ## <a id="notebooks"></a>Notebooks & pipeline
 
-| Notebook | Contenu principal | Points clés |
-|----------|------------------|-------------|
-| `pretrained_cnn_model.ipynb` | Fine-tuning d’un ResNet50 pré-entraîné | Pipeline complet d’entraînement en deux phases, visualisation des courbes, export du modèle |
-| `modeling.ipynb` | CNN custom entraîné from scratch + suivi MLflow | Nettoyage/augmentation offline, équilibrage des classes (`compute_class_weight`), scheduler `ReduceLROnPlateau`, lancement automatique de `mlflow ui` |
+| Notebook | Contenu & Auteur principal | Points clés |
+|----------|---------------------------|-------------|
+| `pretrained_cnn_model.ipynb` | Fine-tuning ResNet50 *(Yasmine Sayad)* | Pipeline d’entraînement en deux phases (gel puis dégel des 30 dernières couches), courbes d'apprentissage, export du modèle retenu en production (`model.keras`) |
+| `modeling.ipynb` | CNN custom from scratch + MLflow *(Valentin Périès)* | Nettoyage/augmentation du dataset, déduplication MD5, équilibrage des classes (`compute_class_weight`), scheduler `ReduceLROnPlateau`, monitoring des runs sous `mlflow ui` |
 
 Étapes communes :
 1. Chargement du dataset avec `image_dataset_from_directory` (split 80/20, batch 16, graine 12).
-2. Prétraitement et augmentation (Keras preprocessing layers).
-3. Entraînement + fine-tuning.
-4. Évaluation (courbes, classification report, matrice de confusion).
-5. Export des artefacts pour le back-end Flask.
+2. Prétraitement et augmentation (couches Keras preprocessing).
+3. Entraînement et validation croisée.
+4. Évaluation approfondie (courbes loss/acc, classification report, matrice de confusion).
+5. Export des artefacts pour l'API Flask de *WildAIprintApp*.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -238,13 +252,13 @@
 
 ## <a id="resultats"></a>Résultats & évaluation
 
-- Accuracy de validation : **0,83**.
-- Courbes d’apprentissage (accuracy & loss) stables et parallèles → généralisation satisfaisante, pas de sur-apprentissage observé.
-- Classes les plus délicates : Castor, Raton laveur, Chat (empreintes visuellement proches).
-- Confusion matrix et classification report disponibles dans les notebooks (visualisations Matplotlib/Seaborn).
-- Recommandations :
-  - Enrichir les classes minoritaires (Rat, Lapin) avec des prises de vues variées.
-  - Tester d’autres backbones (EfficientNet, DenseNet) pour améliorer la robustesse sur les empreintes ambiguës.
+- Accuracy de validation du modèle sélectionné : **0,83 (83%)**.
+- Courbes d’apprentissage (accuracy & loss) stables et parallèles → bonne capacité de généralisation, absence d'overfitting marqué.
+- Classes les plus complexes : Castor, Raton laveur, Chat (proximité morphologique des coussinets et des empreintes digitales).
+- Matrice de confusion et rapport de classification visualisables dans les notebooks via Seaborn/Matplotlib.
+- Pistes d'amélioration :
+  - Enrichir les classes minoritaires (Rat : 60, Lapin : 66) avec des prises de vue complémentaires sur différents substrats (boue, neige, sable).
+  - Évaluer d'autres architectures de transfert (EfficientNetV2, ConvNeXt) pour affiner la séparation des classes ambiguës.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -254,95 +268,12 @@
 
 ### 1. Prérequis
 - Python **3.10+** (environnement virtuel recommandé).
-- GPU compatible CUDA 11.x pour accélérer l’entraînement (optionnel mais conseillé).
-- `pip install tensorflow matplotlib seaborn scikit-learn mlflow pillow numpy`.
+- GPU compatible CUDA 11.x (recommandé pour accélérer le fine-tuning).
+- Dépendances : `pip install tensorflow matplotlib seaborn scikit-learn mlflow pillow numpy`.
 
 ### 2. Préparation de l’environnement
 ```bash
 python -m venv .venv
 source .venv/bin/activate          # Windows : .venv\Scripts\activate
 pip install --upgrade pip
-pip install -r requirements.txt    # si vous générez un fichier de dépendances
-```
-
-### 3. Lancer un entraînement
-1. Ouvrir le notebook de votre choix (`modeling.ipynb` ou `pretrained_cnn_model.ipynb`) dans Jupyter Lab / VS Code.
-2. Adapter `dataset_path` si votre dataset est stocké ailleurs.
-3. Exécuter les cellules séquentiellement :
-   - le notebook `modeling.ipynb` peut lancer `mlflow ui` automatiquement.
-4. Vérifier les courbes et la matrice de confusion.
-5. Récupérer `model.keras` & `class_names.json` pour les brancher sur l’API Flask.
-
-### 4. Utilisation côté API Flask
-- Charger le modèle Keras (`tf.keras.models.load_model("model.keras")`).
-- Utiliser `class_names.json` pour décoder l’entier retourné en label lisible.
-- Appliquer les mêmes étapes de prétraitement qu’à l’entraînement (redimensionnement 256×256, normalisation, augmentation optionnelle).
-
-<p align="right"><a href="#top">Retour en haut</a></p>
-
----
-
-## <a id="structure"></a>Structure du dépôt
-
-```
-/
-├── .gitignore                 # Ignorer les artefacts lourds et temporaires
-├── modeling.ipynb              # CNN personnalisé + suivi MLflow
-├── pretrained_cnn_model.ipynb  # Fine-tuning ResNet50
-├── dataset/                    # Images d’empreintes (ignorées par Git, à placer localement)
-├── model.keras                 # Modèle entraîné (généré après entraînement, hors suivi Git)
-└── class_names.json            # Mapping des classes (généré après entraînement, hors suivi Git)
-```
-
-<p align="right"><a href="#top">Retour en haut</a></p>
-
----
-
-### Fichiers ignorés (.gitignore)
-
-Pour alléger le dépôt, le fichier `.gitignore` exclut les dossiers et artefacts volumineux générés pendant les entraînements :
-
-```gitignore
-# Données et artefacts lourds
-dataset/
-model.keras
-class_names.json
-mlruns/
-outputs/
-
-# Environnements et caches
-.venv/
-env/
-venv/
-__pycache__/
-*.py[cod]
-.ipynb_checkpoints/
-
-# Outils & IDE
-.DS_Store
-.vscode/
-.idea/
-```
-
-Après avoir mis à jour le `.gitignore`, exécutez les commandes suivantes pour retirer les gros fichiers déjà suivis :
-
-```bash
-git rm -r --cached dataset
-git rm --cached model.keras class_names.json  # Ignore si ces fichiers n'existent pas encore
-git commit -m "Nettoie les artefacts lourds hors Git"
-```
-
-<p align="right"><a href="#top">Retour en haut</a></p>
-
----
-
-## <a id="ressources"></a>Ressources & inspirations
-- [Documentation TensorFlow / Keras](https://www.tensorflow.org/api_docs) – couches, callbacks et pipelines d’augmentation.
-- [MLflow Tracking](https://mlflow.org/docs/latest/tracking.html) – suivi des expériences.
-- [Guide scikit-learn](https://scikit-learn.org/stable/) – métriques de classification.
-- [Simplon.co](https://simplon.co/) – référentiel de la formation Développeur IA.
-- Études terrain sur la reconnaissance d’empreintes animales (NatureTracking, iNaturalist) ayant inspiré la composition du dataset.
-
-<p align="right"><a href="#top">Retour en haut</a></p>
-
----
+pip install -r requirements.txt    # ou installation directe des packages ci-dessus
