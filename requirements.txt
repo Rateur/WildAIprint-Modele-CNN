@@ -1,0 +1,10 @@
+# Versions qui ont produit les résultats de split_par_photo*.ipynb (octobre 2026, Python 3.13, CPU)
+tensorflow==2.21.0
+scikit-learn==1.9.1
+numpy==2.5.4
+matplotlib==3.11.2
+seaborn==0.13.2
+pillow==13.0.0
+jupyterlab
+# modeling.ipynb (premier CNN) suit aussi ses runs dans MLflow
+mlflow
