@@ -350,7 +350,7 @@ cd WildAIprint-Modele-CNN
 python -m venv .venv
 source .venv/bin/activate          # Windows : .venv\Scripts\activate
 pip install --upgrade pip
-pip install jupyterlab tensorflow matplotlib seaborn scikit-learn mlflow pillow numpy pandas
+pip install -r requirements.txt
 jupyter lab
 ```
 `jupyter lab` ouvre l’interface dans le navigateur. Ouvrez ensuite le notebook voulu.
@@ -378,6 +378,7 @@ Vos effectifs seront différents de ceux de la section [Dataset](#dataset), donc
 ```text
 .
 ├── README.md
+├── requirements.txt                        # versions qui ont produit les résultats
 ├── pretrained_cnn_model.ipynb              # ResNet50, modèle retenu
 ├── modeling.ipynb                          # nettoyage, augmentation, CNN from scratch, MLflow
 ├── split_par_photo.ipynb                   # évaluation refaite par photo d’origine
