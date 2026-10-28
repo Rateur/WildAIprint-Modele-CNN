@@ -16,7 +16,7 @@
 </p>
 
 > La documentation du projet est répartie sur deux dépôts complémentaires :
-> - **Ce dépôt** (Valentin Périès) : notebooks d’expérimentation, monitoring MLflow, pipeline data et modèle IA.
+> - **Ce dépôt** (Valentin Périès) : notebooks d’expérimentation, monitoring MLflow, pipeline data, modèle IA et évaluation refaite.
 > - **WildAIprint App** (Front/Back) : [https://github.com/Rateur/wildaiprint-App](https://github.com/Rateur/wildaiprint-App)
 
 ---
@@ -40,19 +40,20 @@
 ## <a id="a-propos"></a>À propos
 
 ### <a id="pitch"></a>Pitch & objectifs
-- **WildAIprint** est un système de vision par ordinateur capable de reconnaître 13 espèces fauniques à partir de photographies d’empreintes animales.
-- Il alimente l’API Flask du projet compagnon *WildAIprintApp* pour fournir des prédictions en temps réel sur le terrain.
-- Ce dépôt se concentre sur la dimension **IA / data engineering** : nettoyage du dataset, expérimentations de modélisation, évaluation comparative et export des artefacts d’inférence.
-- L’application web complète (interface utilisateur & API) est hébergée sur GitLab : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
-- Livrables clés :
-  - `model.keras` (poids du modèle retenu),
-  - `class_names.json` (ordre des classes pour l’inférence Flask),
-  - deux notebooks documentés couvrant le transfert d’apprentissage ResNet50 et l’expérimentation CNN from scratch avec MLflow.
+- **WildAIprint** est un modèle de vision par ordinateur qui classe des photos d’empreintes animales en 13 espèces.
+- Le modèle retenu est servi par l’API Flask (route `/predict`) du projet compagnon *WildAIprintApp*.
+- Ce dépôt se concentre sur la dimension **IA / data engineering** : nettoyage du dataset, expérimentations de modélisation, évaluation et export des artefacts d’inférence.
+- **Chiffre à retenir : 26 % de bonnes réponses sur des photos jamais vues** (au hasard : 8 %). Les 83 % annoncés au départ venaient d’une fuite de données dans la séparation entre entraînement et validation. Le détail est dans [Résultats & évaluation](#resultats).
+- Le dépôt GitLab de l’équipe (application et CI) : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
+- Contenu du dépôt :
+  - quatre notebooks : transfert d’apprentissage ResNet50, CNN from scratch avec MLflow, et deux notebooks d’évaluation refaite en octobre 2026,
+  - deux fichiers `resultats_*.json` avec les mesures de l’évaluation refaite.
+- `model.keras` et `class_names.json` sont produits par `pretrained_cnn_model.ipynb`. Ils ne sont pas versionnés ici. `model.keras` est dans le dépôt de l’application, via Git LFS.
 
 ### <a id="contexte"></a>Contexte pédagogique
 - Projet mené en équipe dans le cadre de la formation **Simplon x Microsoft – Développeur IA**.
 - Objectif pédagogique : concevoir, entraîner et déployer un pipeline de Deep Learning complet de bout en bout (data engineering, fine-tuning, tracking d’expériences, conteneurisation).
-- Le modèle est entraîné sur un jeu de données de ~1 500 images d'empreintes et illustre la mise en production d’un modèle TensorFlow/Keras dans un microservice Flask conteneurisé.
+- Le modèle est entraîné sur 250 photos d’origine d’empreintes, soit 1 500 images après augmentation. Il est intégré dans une API Flask conteneurisée (Docker Compose) du projet compagnon.
 
 ### <a id="equipe"></a>Équipe & attribution des contributions
 Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
@@ -64,7 +65,7 @@ Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
 | **Valentin Phan** | [@ValentinPhan](https://github.com/ValentinPhan) | Exploration des hyperparamètres, tests d'augmentation de données et évaluation comparative des métriques. |
 | **Brunel** | [@Brunel-ops](https://github.com/Brunel-ops) | Préparation des jeux de données, tests de robustesse et benchmarking des temps d'inférence. |
 
-> 📌 **Précision d'attribution** : Plusieurs architectures ont été expérimentées en parallèle par les membres de l’équipe. Le modèle final sélectionné pour l’application web est l'architecture **ResNet50 développée par Yasmine Sayad** (`pretrained_cnn_model.ipynb`). Le présent dépôt personnel documente les notebooks d’entraînement, l'instrumentation MLflow et les étapes de data engineering associées.
+> 📌 **Précision d'attribution** : Plusieurs architectures ont été expérimentées en parallèle par les membres de l’équipe. Le modèle final sélectionné pour l’application web est l'architecture **ResNet50 développée par Yasmine Sayad** (`pretrained_cnn_model.ipynb`). Le présent dépôt personnel documente les notebooks d’entraînement, l'instrumentation MLflow et les étapes de data engineering associées. L’évaluation refaite en octobre 2026 (`split_par_photo.ipynb` et `split_par_photo_preprocess.ipynb`) est de Valentin Périès.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -111,15 +112,18 @@ Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
   </tr>
 </table>
 
-- **Suivi des expériences** : MLflow (autolog activé dans `modeling.ipynb`, suivi des paramètres et courbes loss/accuracy).
-- **Traitement d’images** : Pillow pour le nettoyage et l'audit d'intégrité, couches Keras pour l’augmentation à la volée.
-- **Stack déploiement** : export `.keras` + `class_names.json` pour intégration dans l'API Flask de *WildAIprintApp*.
+- **Suivi des expériences** : MLflow (autolog activé dans `modeling.ipynb`, pour le premier CNN uniquement).
+- **Traitement d’images** : Pillow pour le nettoyage, l’audit d’intégrité et l’empreinte visuelle dHash ; couches Keras pour l’augmentation à la volée.
+- **Évaluation** : scikit-learn (exactitude, F1 macro, rapport de classification, matrice de confusion) et intervalles à 95 % par bootstrap avec NumPy.
+- **Export** : `model.keras` et `class_names.json` pour l’API Flask de *WildAIprintApp*.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
 ---
 
 ## <a id="dataset"></a>Dataset & préparation
+
+> Le dossier `dataset/` n’est plus distribué. Les photos viennent du web, avec des droits inconnus, et ont été retirées de l’historique du dépôt. Pour relancer les notebooks, il faut fournir son propre jeu de données (voir [Installation](#installation)).
 
 - 13 classes d’animaux (empreintes) :
 
@@ -189,25 +193,35 @@ Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
       </td>
     </tr>
   </table>
-- 1 500 images après nettoyage automatique :
+- 250 photos d’origine, 1 500 images après augmentation :
   - suppression des fichiers corrompus,
-  - détection et suppression des doublons via hachage MD5,
-  - génération d’images augmentées (rotation, symétrie, zoom, bruit, luminosité).
+  - suppression des copies exactes par hachage MD5,
+  - 5 variantes par photo (luminosité, miroir, bruit, rotation, zoom), soit 250 photos d’origine et 1 250 variantes.
 - Les labels sont inférés directement depuis la structure des répertoires (`image_dataset_from_directory`).
-- L’augmentation en ligne (RandomFlip, RandomZoom, RandomBrightness…) complète l’enrichissement offline pour améliorer l'invariance et la généralisation.
+- L’augmentation en ligne (RandomFlip, RandomZoom, RandomBrightness…) s’ajoute à l’augmentation hors ligne pendant l’entraînement.
 
-| Classe | Images | Classe | Images |
-|--------|--------|--------|--------|
-| Castor | 96 | Ours | 132 |
-| Chat | 108 | Puma | 132 |
-| Chien | 144 | Rat | 60 |
-| Coyote | 126 | Raton laveur | 138 |
-| Écureuil | 114 | Renard | 132 |
-| Lapin | 66 | Loup | 108 |
-| Lynx | 144 | **Total** | **1 500** |
+| Espèce | Photos d’origine | Images après augmentation |
+|--------|------------------|---------------------------|
+| Castor | 16 | 96 |
+| Chat | 18 | 108 |
+| Chien | 24 | 144 |
+| Coyote | 21 | 126 |
+| Écureuil | 19 | 114 |
+| Lapin | 11 | 66 |
+| Loup | 18 | 108 |
+| Lynx | 24 | 144 |
+| Ours | 22 | 132 |
+| Puma | 22 | 132 |
+| Rat | 10 | 60 |
+| Raton laveur | 23 | 138 |
+| Renard | 22 | 132 |
+| **Total** | **250** | **1 500** |
 
-> 📁 Les images sont organisées dans `dataset/<classe>/*.jpg|.png`.  
-> Le partitionnement reproductible utilise un split 80% entraînement / 20% validation avec une graine fixe (seed 12, batch 16).
+Deux séparations ont été utilisées, avec la graine 12 et des lots de 16 :
+- **Évaluation d’origine** : 80 % entraînement, 20 % validation, faite sur les 1 500 images (1 200 et 300). Les variantes d’une même photo se retrouvent des deux côtés. C’est la source de la fuite décrite dans [Résultats](#resultats).
+- **Évaluation refaite** : 70 % entraînement, 15 % validation, 15 % test, par photo d’origine et avant l’augmentation. Cela donne 1 044 images d’entraînement (174 photos et leurs variantes), 38 photos de validation et 38 photos de test.
+
+Les photos de la galerie viennent de Wikimedia Commons. Ce sont des photos d’animaux, pour illustrer. Elles ne font pas partie du jeu d’entraînement.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -217,16 +231,17 @@ Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
 
 Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** pré-entraîné (développé par Yasmine Sayad) :
 - **Backbone** : ResNet50 pré-entraîné sur ImageNet (`include_top=False`).
-- **Entrée** : images RGB redimensionnées en 256×256, normalisées et augmentées à la volée.
+- **Entrée** : images RGB redimensionnées en 256×256. Le modèle reçoit des pixels bruts de 0 à 255, sans `preprocess_input`. Augmentation à la volée : miroir, rotation, zoom, translation, luminosité, bruit gaussien.
 - **Tête personnalisée** :
   - `GlobalAveragePooling2D`,
   - `Dropout(0.5)` + `Dense(128, relu)` + `Dropout(0.3)`,
   - `Dense(num_classes, softmax)` pour la classification multiclasse (13 classes).
 - **Optimisation en deux phases** :
-  - Phase 1 : backbone gelé, entraînement de la tête seule (`Adam`, `lr=1e-3`).
-  - Phase 2 : fine-tuning contrôlé avec dégel des 30 dernières couches de ResNet50 (`lr=1e-5`, callback `EarlyStopping`).
+  - Phase 1 : backbone gelé, entraînement de la tête seule (`Adam`, `lr=1e-3`, 10 époques).
+  - Phase 2 : fine-tuning avec dégel des 30 dernières couches de ResNet50 (`lr=1e-5`, 20 époques, callback `EarlyStopping` avec patience 10).
 - **Suivi des métriques** : accuracy, loss, precision, recall, F1-score (macro) et matrice de confusion.
-- **Export** : sauvegarde des poids dans `model.keras` + génération de `class_names.json`.
+- **Export** : sauvegarde des poids dans `model.keras` et de l’ordre des classes dans `class_names.json`.
+- **Limite connue** : ResNet50 attend des images centrées sur la moyenne d’ImageNet. Ce prétraitement a été testé ensuite, sans gain (voir [Résultats](#resultats)).
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -236,15 +251,24 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 
 | Notebook | Contenu & Auteur principal | Points clés |
 |----------|---------------------------|-------------|
-| `pretrained_cnn_model.ipynb` | Fine-tuning ResNet50 *(Yasmine Sayad)* | Pipeline d’entraînement en deux phases (gel puis dégel des 30 dernières couches), courbes d'apprentissage, export du modèle retenu en production (`model.keras`) |
-| `modeling.ipynb` | CNN custom from scratch + MLflow *(Valentin Périès)* | Nettoyage/augmentation du dataset, déduplication MD5, équilibrage des classes (`compute_class_weight`), scheduler `ReduceLROnPlateau`, monitoring des runs sous `mlflow ui` |
+| `pretrained_cnn_model.ipynb` | Fine-tuning ResNet50 *(Yasmine Sayad)* | Pipeline d’entraînement en deux phases (gel puis dégel des 30 dernières couches), courbes d'apprentissage, 83 % en validation (séparation avec fuite), export du modèle retenu en production (`model.keras`) |
+| `modeling.ipynb` | CNN custom from scratch + MLflow *(Valentin Périès)* | Nettoyage/augmentation du dataset, déduplication MD5, équilibrage des classes (`compute_class_weight`), scheduler `ReduceLROnPlateau`, monitoring des runs sous `mlflow ui`. Trois blocs de convolution (32, 64, 128). Plafond à 18 % en validation |
+| `split_par_photo.ipynb` | Évaluation refaite par photo d’origine *(Valentin Périès, octobre 2026)* | Même modèle et même recette que `pretrained_cnn_model.ipynb`. Rattache chaque variante à sa photo, regroupe les photos presque identiques (dHash), sépare par groupe en 70 / 15 / 15, utilise le test une seule fois, intervalles à 95 % par bootstrap. Écrit `resultats_split_par_photo.json` |
+| `split_par_photo_preprocess.ipynb` | Piste 1 : `preprocess_input` *(Valentin Périès, octobre 2026)* | Même séparation, même test, une seule ligne en plus : `tf.keras.applications.resnet50.preprocess_input`. Écrit `resultats_split_par_photo_preprocess.json` |
 
-Étapes communes :
+Étapes de l’entraînement d’origine (`pretrained_cnn_model.ipynb`, `modeling.ipynb`) :
 1. Chargement du dataset avec `image_dataset_from_directory` (split 80/20, batch 16, graine 12).
-2. Prétraitement et augmentation (couches Keras preprocessing).
-3. Entraînement et validation croisée.
-4. Évaluation approfondie (courbes loss/acc, classification report, matrice de confusion).
-5. Export des artefacts pour l'API Flask de *WildAIprintApp*.
+2. Augmentation à la volée (couches Keras de preprocessing).
+3. Entraînement, avec validation sur les 20 % d’images mises de côté. Il n’y a pas de validation croisée.
+4. Évaluation (courbes loss/accuracy, rapport de classification, matrice de confusion).
+5. Export des artefacts pour l’API Flask de *WildAIprintApp* (`pretrained_cnn_model.ipynb`).
+
+Étapes de l’évaluation refaite (`split_par_photo.ipynb`, `split_par_photo_preprocess.ipynb`) :
+1. Rattachement de chaque variante à sa photo d’origine.
+2. Regroupement des photos d’origine presque identiques.
+3. Séparation par groupe, espèce par espèce, avant l’augmentation.
+4. Entraînement avec la même recette que le modèle retenu.
+5. Mesure unique sur le jeu de test, avec intervalle à 95 %.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -252,13 +276,61 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 
 ## <a id="resultats"></a>Résultats & évaluation
 
-- Accuracy de validation du modèle sélectionné : **0,83 (83%)**.
-- Courbes d’apprentissage (accuracy & loss) stables et parallèles → bonne capacité de généralisation, absence d'overfitting marqué.
-- Classes les plus complexes : Castor, Raton laveur, Chat (proximité morphologique des coussinets et des empreintes digitales).
-- Matrice de confusion et rapport de classification visualisables dans les notebooks via Seaborn/Matplotlib.
-- Pistes d'amélioration :
-  - Enrichir les classes minoritaires (Rat : 60, Lapin : 66) avec des prises de vue complémentaires sur différents substrats (boue, neige, sable).
-  - Évaluer d'autres architectures de transfert (EfficientNetV2, ConvNeXt) pour affiner la séparation des classes ambiguës.
+| Évaluation | Séparation | Évaluée sur | Exactitude | F1 macro |
+|------------|------------|-------------|------------|----------|
+| Modèle retenu, évaluation d’origine | 80 / 20 sur 1 500 images (avec fuite) | 300 images de validation | 83 % | 0,83 |
+| Évaluation refaite | 70 / 15 / 15 par photo d’origine | 38 photos de test | 26 % (13 à 39 %) | 0,26 (0,11 à 0,33) |
+| Piste 1 : `preprocess_input` | idem | les mêmes 38 photos de test | 24 % (11 à 37 %) | 0,19 (0,07 à 0,26) |
+
+Les intervalles sont à 95 %, par bootstrap (2 000 tirages). Au hasard, sur 13 espèces, l’exactitude serait de 8 %.
+
+### 1. Modèle retenu : 83 % en validation
+Le ResNet50 de `pretrained_cnn_model.ipynb` obtient 83 % d’exactitude et un F1 macro de 0,83 sur 300 images de validation.
+
+Ce score est trop optimiste, à cause d’une fuite de données :
+- Chaque photo existe en six versions : l’originale et cinq variantes.
+- La séparation 80 / 20 était faite sur les 1 500 images mélangées.
+- Une photo pouvait donc être en entraînement, et sa variante en miroir en validation.
+- Le modèle avait déjà vu, sous une autre forme, une partie de ce qu’on lui demandait de reconnaître.
+
+Les 83 % mesurent en partie la mémoire des photos. Ils ne mesurent pas la reconnaissance d’une empreinte nouvelle.
+
+### 2. Évaluation refaite : 26 % sur des photos jamais vues
+`split_par_photo.ipynb` garde le même modèle et la même recette. Seule la séparation change :
+1. chaque variante est rattachée à sa photo d’origine ;
+2. les photos d’origine presque identiques sont regroupées (empreinte visuelle dHash, 6 bits d’écart ou moins) ;
+3. la séparation se fait par groupe, espèce par espèce, avant l’augmentation : 70 % entraînement, 15 % validation, 15 % test ;
+4. les variantes ne vont qu’en entraînement ;
+5. le test ne sert qu’une fois, à la fin.
+
+Résultat sur 38 photos de test jamais vues :
+- **26 %** de bonnes réponses (intervalle à 95 % : 13 % à 39 %),
+- F1 macro de **0,26** (0,11 à 0,33),
+- 8 % au hasard.
+
+Le notebook n’a trouvé aucune paire de photos d’origine presque identiques. La fuite venait donc seulement de l’augmentation faite avant la séparation.
+
+Les courbes montrent un écart net. L’exactitude d’entraînement monte vers 70 %. Celle de validation ne dépasse jamais 35 %. Le modèle apprend les photos d’entraînement et généralise mal. Chaque espèce n’a que 6 à 17 photos d’origine pour apprendre.
+
+Les scores par espèce ne sont pas cités : le test compte 2 à 4 photos par espèce, c’est trop peu.
+
+### 3. Piste 1 : `preprocess_input`, 24 %
+ResNet50 attend des images centrées sur la moyenne d’ImageNet. Le modèle d’origine recevait des pixels bruts de 0 à 255. `split_par_photo_preprocess.ipynb` ajoute une seule ligne, `preprocess_input`, avec la même séparation et le même test. La piste était annoncée dans `split_par_photo.ipynb` avant d’être lancée.
+
+Résultat sur les mêmes 38 photos de test :
+- **24 %** de bonnes réponses (11 % à 37 %),
+- F1 macro de **0,19** (0,07 à 0,26).
+
+Les intervalles se recouvrent presque entièrement : aucun gain mesurable. L’exactitude d’entraînement monte vers 70 à 75 %, la validation reste sous 30 %.
+
+### Conclusion
+- Sur des photos jamais vues, le modèle donne 26 %, avec une marge de 13 % à 39 %. C’est au-dessus du hasard (8 %) et très loin de 83 %. Le chiffre de 83 % ne doit pas être cité comme la précision du modèle.
+- Le test compte 38 photos. L’écart entre 26 % et 24 % est dans la marge d’erreur.
+- Le premier levier est le nombre de photos, pas l’architecture.
+
+### Prochaines étapes
+1. Collecter plus de photos d’origine : une cinquantaine par espèce au moins, contre 10 à 24 aujourd’hui. Commencer par Rat (10) et Lapin (11), sur différents substrats (boue, neige, sable).
+2. Mesurer par validation croisée par groupes (`StratifiedGroupKFold`). Ce n’est pas encore fait. Elle donnerait une mesure plus stable qu’un seul test de 38 photos.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -267,13 +339,65 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 ## <a id="installation"></a>Installation & prise en main
 
 ### 1. Prérequis
-- Python **3.10+** (environnement virtuel recommandé).
-- GPU compatible CUDA 11.x (recommandé pour accélérer le fine-tuning).
-- Dépendances : `pip install tensorflow matplotlib seaborn scikit-learn mlflow pillow numpy`.
+- Python **3.10+** (environnement virtuel recommandé). Les deux notebooks d’octobre 2026 ont tourné sous Python 3.13.
+- Pas de carte graphique nécessaire : le processeur suffit. Comptez environ une heure par notebook.
+- Un jeu de données à fournir soi-même (étape 3).
 
-### 2. Préparation de l’environnement
+### 2. Récupérer les notebooks et installer l’environnement
 ```bash
+git clone https://github.com/Rateur/WildAIprint-Modele-CNN.git
+cd WildAIprint-Modele-CNN
 python -m venv .venv
 source .venv/bin/activate          # Windows : .venv\Scripts\activate
 pip install --upgrade pip
-pip install -r requirements.txt    # ou installation directe des packages ci-dessus
+pip install jupyterlab tensorflow matplotlib seaborn scikit-learn mlflow pillow numpy pandas
+jupyter lab
+```
+`jupyter lab` ouvre l’interface dans le navigateur. Ouvrez ensuite le notebook voulu.
+
+### 3. Fournir son jeu de données
+Le dossier `dataset/` n’est pas dans le dépôt. Créez-le à la racine, avec un sous-dossier par espèce et vos photos dedans : `dataset/<espèce>/*.jpg`.
+
+Le projet utilisait 13 dossiers : `Castor`, `Chat`, `Chien`, `Coyote`, `Ecureuil`, `Lapin`, `Loup`, `Lynx`, `Ours`, `Puma`, `Rat`, `Raton laveur`, `Renard`.
+
+Les notebooks `split_par_photo*.ipynb` attendent les variantes augmentées dans le même dossier, nommées `aug_bright_`, `aug_flip_`, `aug_noise_`, `aug_rot_` et `aug_zoom_` suivi du nom de la photo d’origine. Pour les créer, lancez une seule fois la cellule « Read and clean data » de `modeling.ipynb`. Elle modifie `dataset/` sur place : elle supprime les images corrompues et les doublons exacts, puis ajoute les variantes. Travaillez sur une copie.
+
+Vos effectifs seront différents de ceux de la section [Dataset](#dataset), donc vos résultats aussi.
+
+### 4. Lancer les notebooks
+- `modeling.ipynb` : nettoyage, augmentation, premier CNN et suivi MLflow (`mlflow ui`).
+- `pretrained_cnn_model.ipynb` : modèle retenu. Il écrit `model.keras` et `class_names.json` dans le dossier courant. Git les ignore.
+- `split_par_photo.ipynb` puis `split_par_photo_preprocess.ipynb` : évaluation refaite. Ils écrivent les fichiers `resultats_*.json`.
+
+<p align="right"><a href="#top">Retour en haut</a></p>
+
+---
+
+## <a id="structure"></a>Structure du dépôt
+
+```text
+.
+├── README.md
+├── pretrained_cnn_model.ipynb              # ResNet50, modèle retenu
+├── modeling.ipynb                          # nettoyage, augmentation, CNN from scratch, MLflow
+├── split_par_photo.ipynb                   # évaluation refaite par photo d’origine
+├── split_par_photo_preprocess.ipynb        # piste 1 : preprocess_input
+├── resultats_split_par_photo.json
+├── resultats_split_par_photo_preprocess.json
+└── dataset/                                # à fournir, ignoré par Git
+```
+
+Git ignore aussi `model.keras`, `class_names.json`, `mlruns/` et `outputs/`.
+
+<p align="right"><a href="#top">Retour en haut</a></p>
+
+---
+
+## <a id="ressources"></a>Ressources & inspirations
+
+- Application WildAIprint (API Flask, front, Docker Compose) : [github.com/Rateur/wildaiprint-App](https://github.com/Rateur/wildaiprint-App).
+- Dépôt GitLab de l’équipe : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
+- ResNet50 pré-entraîné sur ImageNet, chargé avec `tf.keras.applications`.
+- Photos de la galerie : Wikimedia Commons.
+
+<p align="right"><a href="#top">Retour en haut</a></p>
