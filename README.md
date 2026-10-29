@@ -253,7 +253,7 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 |----------|---------------------------|-------------|
 | `pretrained_cnn_model.ipynb` | Fine-tuning ResNet50 *(Yasmine Sayad)* | Pipeline d’entraînement en deux phases (gel puis dégel des 30 dernières couches), courbes d'apprentissage, 83 % en validation (séparation avec fuite), export du modèle retenu en production (`model.keras`) |
 | `modeling.ipynb` | CNN custom from scratch + MLflow *(Valentin Périès)* | Nettoyage/augmentation du dataset, déduplication MD5, équilibrage des classes (`compute_class_weight`), scheduler `ReduceLROnPlateau`, monitoring des runs sous `mlflow ui`. Trois blocs de convolution (32, 64, 128). Plafond à 18 % en validation |
-| `split_par_photo.ipynb` | Évaluation refaite par photo d’origine *(Valentin Périès, octobre 2026)* | Même modèle et même recette que `pretrained_cnn_model.ipynb`. Rattache chaque variante à sa photo, regroupe les photos presque identiques (dHash), sépare par groupe en 70 / 15 / 15, utilise le test une seule fois, intervalles à 95 % par bootstrap. Écrit `resultats_split_par_photo.json` |
+| `split_par_photo.ipynb` | Évaluation refaite par photo d’origine *(Valentin Périès, octobre 2026)* | Même architecture et même recette que `pretrained_cnn_model.ipynb`, modèle réentraîné. Rattache chaque variante à sa photo, regroupe les photos presque identiques (dHash), sépare par groupe en 70 / 15 / 15, utilise le test une seule fois, intervalles à 95 % par bootstrap. Écrit `resultats_split_par_photo.json` |
 | `split_par_photo_preprocess.ipynb` | Piste 1 : `preprocess_input` *(Valentin Périès, octobre 2026)* | Même séparation, même test, une seule ligne en plus : `tf.keras.applications.resnet50.preprocess_input`. Écrit `resultats_split_par_photo_preprocess.json` |
 
 Étapes de l’entraînement d’origine (`pretrained_cnn_model.ipynb`, `modeling.ipynb`) :
@@ -296,7 +296,7 @@ Ce score est trop optimiste, à cause d’une fuite de données :
 Les 83 % mesurent en partie la mémoire des photos. Ils ne mesurent pas la reconnaissance d’une empreinte nouvelle.
 
 ### 2. Évaluation refaite : 26 % sur des photos jamais vues
-`split_par_photo.ipynb` garde le même modèle et la même recette. Seule la séparation change :
+`split_par_photo.ipynb` garde la même architecture et la même recette, et réentraîne le modèle. Seule la séparation change :
 1. chaque variante est rattachée à sa photo d’origine ;
 2. les photos d’origine presque identiques sont regroupées (empreinte visuelle dHash, 6 bits d’écart ou moins) ;
 3. la séparation se fait par groupe, espèce par espèce, avant l’augmentation : 70 % entraînement, 15 % validation, 15 % test ;
@@ -326,6 +326,7 @@ Les intervalles se recouvrent presque entièrement : aucun gain mesurable. L’e
 ### Conclusion
 - Sur des photos jamais vues, le modèle donne 26 %, avec une marge de 13 % à 39 %. C’est au-dessus du hasard (8 %) et très loin de 83 %. Le chiffre de 83 % ne doit pas être cité comme la précision du modèle.
 - Le test compte 38 photos. L’écart entre 26 % et 24 % est dans la marge d’erreur.
+- Un seul entraînement par notebook, graine 12 : l’écart d’un entraînement à l’autre n’est pas mesuré.
 - Le premier levier est le nombre de photos, pas l’architecture.
 
 ### Prochaines étapes
