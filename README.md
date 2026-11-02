@@ -43,11 +43,12 @@
 - **WildAIprint** est un modèle de vision par ordinateur qui classe des photos d’empreintes animales en 13 espèces.
 - Le modèle retenu est servi par l’API Flask (route `/predict`) du projet compagnon *WildAIprintApp*.
 - Ce dépôt se concentre sur la dimension **IA / data engineering** : nettoyage du dataset, expérimentations de modélisation, évaluation et export des artefacts d’inférence.
-- **Chiffre à retenir : 26 % de bonnes réponses sur des photos jamais vues** (au hasard : 8 %). Les 83 % annoncés au départ venaient d’une fuite de données dans la séparation entre entraînement et validation. Le détail est dans [Résultats & évaluation](#resultats).
+- **Chiffre à retenir : 26 % de bonnes réponses sur des photos jamais vues** (au hasard : 8 %). Les 83 % annoncés au départ venaient d’une fuite de données dans la séparation entre entraînement et validation. Le détail est dans [Résultats & évaluation](#resultats). Même score avec 715 photos d’origine au lieu de 250.
 - Le dépôt GitLab de l’équipe (application et CI) : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
 - Contenu du dépôt :
-  - quatre notebooks : transfert d’apprentissage ResNet50, CNN from scratch avec MLflow, et deux notebooks d’évaluation refaite en octobre 2026,
-  - deux fichiers `resultats_*.json` avec les mesures de l’évaluation refaite.
+  - cinq notebooks : transfert d’apprentissage ResNet50, CNN from scratch avec MLflow, et trois notebooks d’évaluation refaite en octobre 2026,
+  - trois fichiers `resultats_*.json` avec les mesures de l’évaluation refaite,
+  - `fetch_inat.py` et `build_dataset.py` pour reconstruire le jeu agrandi, et `inat_attributions.csv` pour les crédits des photos iNaturalist.
 - `model.keras` et `class_names.json` sont produits par `pretrained_cnn_model.ipynb`. Ils ne sont pas versionnés ici. `model.keras` est dans le dépôt de l’application, via Git LFS.
 
 ### <a id="contexte"></a>Contexte pédagogique
@@ -65,7 +66,7 @@ Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
 | **Valentin Phan** | [@ValentinPhan](https://github.com/ValentinPhan) | Exploration des hyperparamètres, tests d'augmentation de données et évaluation comparative des métriques. |
 | **Brunel** | [@Brunel-ops](https://github.com/Brunel-ops) | Préparation des jeux de données, tests de robustesse et benchmarking des temps d'inférence. |
 
-> 📌 **Précision d'attribution** : Plusieurs architectures ont été expérimentées en parallèle par les membres de l’équipe. Le modèle final sélectionné pour l’application web est l'architecture **ResNet50 développée par Yasmine Sayad** (`pretrained_cnn_model.ipynb`). Le présent dépôt personnel documente les notebooks d’entraînement, l'instrumentation MLflow et les étapes de data engineering associées. L’évaluation refaite en octobre 2026 (`split_par_photo.ipynb` et `split_par_photo_preprocess.ipynb`) est de Valentin Périès.
+> 📌 **Précision d'attribution** : Plusieurs architectures ont été expérimentées en parallèle par les membres de l’équipe. Le modèle final sélectionné pour l’application web est l'architecture **ResNet50 développée par Yasmine Sayad** (`pretrained_cnn_model.ipynb`). Le présent dépôt personnel documente les notebooks d’entraînement, l'instrumentation MLflow et les étapes de data engineering associées. L’évaluation refaite en octobre 2026 (`split_par_photo.ipynb`, `split_par_photo_preprocess.ipynb` et `split_par_photo_v2.ipynb`) est de Valentin Périès.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -123,7 +124,7 @@ Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
 
 ## <a id="dataset"></a>Dataset & préparation
 
-> Le dossier `dataset/` n’est plus distribué. Les photos viennent du web, avec des droits inconnus, et ont été retirées de l’historique du dépôt. Pour relancer les notebooks, il faut fournir son propre jeu de données (voir [Installation](#installation)).
+> Le dossier `dataset/` n’est plus distribué. Les photos viennent du web, avec des droits inconnus, et ont été retirées de l’historique du dépôt. Pour relancer les notebooks, il faut fournir son propre jeu de données (voir [Installation](#installation)). Les 465 photos iNaturalist du jeu agrandi ne sont pas non plus dans le dépôt : `fetch_inat.py` les retélécharge.
 
 - 13 classes d’animaux (empreintes) :
 
@@ -221,6 +222,8 @@ Deux séparations ont été utilisées, avec la graine 12 et des lots de 16 :
 - **Évaluation d’origine** : 80 % entraînement, 20 % validation, faite sur les 1 500 images (1 200 et 300). Les variantes d’une même photo se retrouvent des deux côtés. C’est la source de la fuite décrite dans [Résultats](#resultats).
 - **Évaluation refaite** : 70 % entraînement, 15 % validation, 15 % test, par photo d’origine et avant l’augmentation. Cela donne 1 044 images d’entraînement (174 photos et leurs variantes), 38 photos de validation et 38 photos de test.
 
+**Jeu agrandi** (`split_par_photo_v2.ipynb`) : 715 photos d’origine, 55 par espèce, contre 250. Aux 250 photos du projet s’ajoutent 465 photos d’empreintes prises sur iNaturalist, marquées « empreinte », sous licence libre (CC0 : 9, CC BY : 50, CC BY-NC : 406) et triées à la main. La séparation est la même que pour l’évaluation refaite (70 / 15 / 15 par photo d’origine, variantes en entraînement seulement), avec les mêmes cinq variantes. Chaque photo garde son auteur et sa licence dans `inat_attributions.csv`.
+
 Les photos de la galerie viennent de Wikimedia Commons. Ce sont des photos d’animaux, pour illustrer. Elles ne font pas partie du jeu d’entraînement.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
@@ -255,6 +258,7 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 | `modeling.ipynb` | CNN custom from scratch + MLflow *(Valentin Périès)* | Nettoyage/augmentation du dataset, déduplication MD5, équilibrage des classes (`compute_class_weight`), scheduler `ReduceLROnPlateau`, monitoring des runs sous `mlflow ui`. Trois blocs de convolution (32, 64, 128). Plafond à 18 % en validation |
 | `split_par_photo.ipynb` | Évaluation refaite par photo d’origine *(Valentin Périès, octobre 2026)* | Même architecture et même recette que `pretrained_cnn_model.ipynb`, modèle réentraîné. Rattache chaque variante à sa photo, regroupe les photos presque identiques (dHash), sépare par groupe en 70 / 15 / 15, utilise le test une seule fois, intervalles à 95 % par bootstrap. Écrit `resultats_split_par_photo.json` |
 | `split_par_photo_preprocess.ipynb` | Piste 1 : `preprocess_input` *(Valentin Périès, octobre 2026)* | Même séparation, même test, une seule ligne en plus : `tf.keras.applications.resnet50.preprocess_input`. Écrit `resultats_split_par_photo_preprocess.json` |
+| `split_par_photo_v2.ipynb` | Jeu agrandi : 715 photos d’origine *(Valentin Périès, octobre 2026)* | Même séparation (par photo d’origine, 70 / 15 / 15, variantes en entraînement seulement), même architecture et même recette, graine 12. Les 250 photos du projet et 465 photos iNaturalist, 104 photos de test. Écrit `resultats_split_par_photo_v2.json` |
 
 Étapes de l’entraînement d’origine (`pretrained_cnn_model.ipynb`, `modeling.ipynb`) :
 1. Chargement du dataset avec `image_dataset_from_directory` (split 80/20, batch 16, graine 12).
@@ -263,7 +267,7 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 4. Évaluation (courbes loss/accuracy, rapport de classification, matrice de confusion).
 5. Export des artefacts pour l’API Flask de *WildAIprintApp* (`pretrained_cnn_model.ipynb`).
 
-Étapes de l’évaluation refaite (`split_par_photo.ipynb`, `split_par_photo_preprocess.ipynb`) :
+Étapes de l’évaluation refaite (`split_par_photo.ipynb`, `split_par_photo_preprocess.ipynb`, `split_par_photo_v2.ipynb`) :
 1. Rattachement de chaque variante à sa photo d’origine.
 2. Regroupement des photos d’origine presque identiques.
 3. Séparation par groupe, espèce par espèce, avant l’augmentation.
@@ -281,6 +285,7 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 | Modèle retenu, évaluation d’origine | 80 / 20 sur 1 500 images (avec fuite) | 300 images de validation | 83 % | 0,83 |
 | Évaluation refaite | 70 / 15 / 15 par photo d’origine | 38 photos de test | 26 % (13 à 39 %) | 0,26 (0,11 à 0,33) |
 | Piste 1 : `preprocess_input` | idem | les mêmes 38 photos de test | 24 % (11 à 37 %) | 0,19 (0,07 à 0,26) |
+| Jeu agrandi : 715 photos d’origine | 70 / 15 / 15 par photo d’origine | 104 photos de test (8 par espèce) | 26 % (18 à 35 %) | 0,24 (0,16 à 0,31) |
 
 Les intervalles sont à 95 %, par bootstrap (2 000 tirages). Au hasard, sur 13 espèces, l’exactitude serait de 8 %.
 
@@ -323,15 +328,36 @@ Résultat sur les mêmes 38 photos de test :
 
 Les intervalles se recouvrent presque entièrement : aucun gain mesurable. L’exactitude d’entraînement monte vers 70 à 75 %, la validation reste sous 30 %.
 
+### 4. Presque trois fois plus de photos : toujours 26 %
+Après la première évaluation, le manque de photos semblait le premier frein : 10 à 24 photos d’origine par espèce. `split_par_photo_v2.ipynb` teste cette idée avec un jeu agrandi :
+- **715 photos d’origine**, 55 par espèce, contre 250 ;
+- les 250 photos du projet, plus **465 photos d’empreintes prises sur iNaturalist**, marquées « empreinte » et triées à la main ;
+- licences libres : CC0 (9), CC BY (50), CC BY-NC (406) ;
+- l’auteur et la licence de chaque photo sont dans `inat_attributions.csv`.
+
+Le reste ne change pas : séparation par photo d’origine (70 / 15 / 15), variantes en entraînement seulement, même architecture, même recette, mêmes cinq variantes. Le modèle est réentraîné une fois (graine 12), sur carte graphique.
+
+Résultat sur 104 photos de test jamais vues (8 par espèce) :
+- **26 %** de bonnes réponses (18 % à 35 %),
+- F1 macro de **0,24** (0,16 à 0,31),
+- 8 % au hasard.
+
+Par source : 25 % sur les 48 photos d’origine du projet, 27 % sur les 56 photos iNaturalist.
+
+Le contrôle des quasi-doublons (dHash) a signalé deux paires de photos d’espèces différentes. Vérifiées à l’œil, ce sont des photos différentes, peu détaillées (neige, sol uniforme).
+
+Presque trois fois plus de photos, et le même score. La mesure est meilleure : l’intervalle passe de 13 à 39 % à 18 à 35 %. Le modèle, lui, n’a pas progressé. Le nombre de photos n’était pas le seul frein. Deux pistes restent à tester : recadrer l’empreinte avant de la classer, et un fine-tuning plus large. Un seul entraînement : l’écart d’un entraînement à l’autre n’est pas mesuré.
+
 ### Conclusion
-- Sur des photos jamais vues, le modèle donne 26 %, avec une marge de 13 % à 39 %. C’est au-dessus du hasard (8 %) et très loin de 83 %. Le chiffre de 83 % ne doit pas être cité comme la précision du modèle.
-- Le test compte 38 photos. L’écart entre 26 % et 24 % est dans la marge d’erreur.
+- Sur des photos jamais vues, le modèle donne 26 %, avec 250 photos d’origine comme avec 715. La marge est de 13 % à 39 % sur 38 photos de test, de 18 % à 35 % sur 104. C’est au-dessus du hasard (8 %) et très loin de 83 %. Le chiffre de 83 % ne doit pas être cité comme la précision du modèle.
+- Les trois mesures refaites (26 %, 24 %, 26 %) restent dans leurs marges d’erreur. Aucun écart n’est établi entre elles.
 - Un seul entraînement par notebook, graine 12 : l’écart d’un entraînement à l’autre n’est pas mesuré.
-- Le premier levier est le nombre de photos, pas l’architecture.
+- Ajouter des photos n’a pas suffi. Le nombre de photos n’était pas le seul frein.
 
 ### Prochaines étapes
-1. Collecter plus de photos d’origine : une cinquantaine par espèce au moins, contre 10 à 24 aujourd’hui. Commencer par Rat (10) et Lapin (11), sur différents substrats (boue, neige, sable).
-2. Mesurer par validation croisée par groupes (`StratifiedGroupKFold`). Ce n’est pas encore fait. Elle donnerait une mesure plus stable qu’un seul test de 38 photos.
+1. Recadrer l’empreinte avant de la classer.
+2. Essayer un fine-tuning plus large.
+3. Mesurer par validation croisée par groupes (`StratifiedGroupKFold`). Ce n’est pas encore fait. Elle donnerait une mesure plus stable qu’un seul test.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -340,8 +366,8 @@ Les intervalles se recouvrent presque entièrement : aucun gain mesurable. L’e
 ## <a id="installation"></a>Installation & prise en main
 
 ### 1. Prérequis
-- Python **3.10+** (environnement virtuel recommandé). Les deux notebooks d’octobre 2026 ont tourné sous Python 3.13.
-- Pas de carte graphique nécessaire : le processeur suffit. Comptez environ une heure par notebook.
+- Python **3.10+** (environnement virtuel recommandé). Les deux premiers notebooks d’octobre 2026 ont tourné sous Python 3.13.
+- Les deux premiers notebooks d’octobre 2026 n’ont pas besoin de carte graphique : le processeur suffit, environ une heure chacun. `split_par_photo_v2.ipynb` a tourné sur carte graphique. Durée sur processeur : À confirmer.
 - Un jeu de données à fournir soi-même (étape 3).
 
 ### 2. Récupérer les notebooks et installer l’environnement
@@ -365,10 +391,19 @@ Les notebooks `split_par_photo*.ipynb` attendent les variantes augmentées dans 
 
 Vos effectifs seront différents de ceux de la section [Dataset](#dataset), donc vos résultats aussi.
 
-### 4. Lancer les notebooks
+### 4. Reconstruire le jeu agrandi
+Seulement pour `split_par_photo_v2.ipynb`. Les images ne sont pas dans le dépôt : `fetch_inat.py` retélécharge les 465 photos iNaturalist, `build_dataset.py` reconstruit le jeu, avec les mêmes cinq variantes. Les 250 photos du projet restent à fournir (étape 3).
+```bash
+python fetch_inat.py
+python build_dataset.py dataset inat dataset-v2
+```
+Crédits : les photos iNaturalist appartiennent à leurs auteurs. Chaque auteur et chaque licence (CC0, CC BY, CC BY-NC) sont dans `inat_attributions.csv`.
+
+### 5. Lancer les notebooks
 - `modeling.ipynb` : nettoyage, augmentation, premier CNN et suivi MLflow (`mlflow ui`).
 - `pretrained_cnn_model.ipynb` : modèle retenu. Il écrit `model.keras` et `class_names.json` dans le dossier courant. Git les ignore.
 - `split_par_photo.ipynb` puis `split_par_photo_preprocess.ipynb` : évaluation refaite. Ils écrivent les fichiers `resultats_*.json`.
+- `split_par_photo_v2.ipynb` : jeu agrandi, après l’étape 4. Il écrit `resultats_split_par_photo_v2.json`.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -384,8 +419,13 @@ Vos effectifs seront différents de ceux de la section [Dataset](#dataset), donc
 ├── modeling.ipynb                          # nettoyage, augmentation, CNN from scratch, MLflow
 ├── split_par_photo.ipynb                   # évaluation refaite par photo d’origine
 ├── split_par_photo_preprocess.ipynb        # piste 1 : preprocess_input
+├── split_par_photo_v2.ipynb                # jeu agrandi : 715 photos d’origine
+├── fetch_inat.py                           # retélécharge les photos iNaturalist
+├── build_dataset.py                        # reconstruit le jeu agrandi
+├── inat_attributions.csv                   # auteur et licence de chaque photo iNaturalist
 ├── resultats_split_par_photo.json
 ├── resultats_split_par_photo_preprocess.json
+├── resultats_split_par_photo_v2.json
 └── dataset/                                # à fournir, ignoré par Git
 ```
 
@@ -401,5 +441,6 @@ Git ignore aussi `model.keras`, `class_names.json`, `mlruns/` et `outputs/`.
 - Dépôt GitLab de l’équipe : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
 - ResNet50 pré-entraîné sur ImageNet, chargé avec `tf.keras.applications`.
 - Photos de la galerie : Wikimedia Commons.
+- Photos d’empreintes du jeu agrandi : [iNaturalist](https://www.inaturalist.org), photos sous licence libre. Auteurs et licences dans `inat_attributions.csv`.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
