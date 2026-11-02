@@ -328,12 +328,12 @@ Résultat sur les mêmes 38 photos de test :
 
 Les intervalles se recouvrent presque entièrement : aucun gain mesurable. L’exactitude d’entraînement monte vers 70 à 75 %, la validation reste sous 30 %.
 
-### 4. Presque trois fois plus de photos : toujours 26 %
+### 4. Presque trois fois plus de photos : aucun gain visible
 Après la première évaluation, le manque de photos semblait le premier frein : 10 à 24 photos d’origine par espèce. `split_par_photo_v2.ipynb` teste cette idée avec un jeu agrandi :
 - **715 photos d’origine**, 55 par espèce, contre 250 ;
 - les 250 photos du projet, plus **465 photos d’empreintes prises sur iNaturalist**, marquées « empreinte » et triées à la main ;
 - licences libres : CC0 (9), CC BY (50), CC BY-NC (406) ;
-- l’auteur et la licence de chaque photo sont dans `inat_attributions.csv`.
+- l’auteur et la licence de chaque photo sont dans `inat_attributions.csv` ; 406 photos sont en CC BY-NC : le jeu agrandi ne peut servir qu’à un usage non commercial.
 
 Le reste ne change pas : séparation par photo d’origine (70 / 15 / 15), variantes en entraînement seulement, même architecture, même recette, mêmes cinq variantes. Le modèle est réentraîné une fois (graine 12), sur carte graphique.
 
@@ -342,22 +342,26 @@ Résultat sur 104 photos de test jamais vues (8 par espèce) :
 - F1 macro de **0,24** (0,16 à 0,31),
 - 8 % au hasard.
 
-Par source : 25 % sur les 48 photos d’origine du projet, 27 % sur les 56 photos iNaturalist.
+Par source : 25 % sur les 48 photos d’origine du projet (13 % à 38 %), 27 % sur les 56 photos iNaturalist (16 % à 39 %). Ces deux scores ne se distinguent pas.
 
 Le contrôle des quasi-doublons (dHash) a signalé deux paires de photos d’espèces différentes. Vérifiées à l’œil, ce sont des photos différentes, peu détaillées (neige, sol uniforme).
 
-Presque trois fois plus de photos, et le même score. La mesure est meilleure : l’intervalle passe de 13 à 39 % à 18 à 35 %. Le modèle, lui, n’a pas progressé. Le nombre de photos n’était pas le seul frein. Deux pistes restent à tester : recadrer l’empreinte avant de la classer, et un fine-tuning plus large. Un seul entraînement : l’écart d’un entraînement à l’autre n’est pas mesuré.
+Les deux tests (38 puis 104 photos) ne sont pas les mêmes, et leurs intervalles se recouvrent : presque trois fois plus de photos n’apportent aucun gain visible, au plus quelques points. La mesure est seulement plus précise : 18 à 35 % au lieu de 13 à 39 %.
+
+Une limite de la recette, la même qu’à l’origine : l’arrêt anticipé (`EarlyStopping`, `restore_best_weights`) garde les poids de la plus faible perte de validation. Ici, ce sont ceux de la première passe de fine-tuning : perte de validation 2,39 (2,56 au hasard), justesse de validation 20 %, alors qu’elle montait ensuite vers 30 %. Le modèle évalué est donc peu entraîné. Le nombre de photos n’était pas le seul frein. Pistes à tester : choisir le modèle sur la justesse de validation, recadrer l’empreinte avant de la classer, un fine-tuning plus large. Un seul entraînement : l’écart d’un entraînement à l’autre n’est pas mesuré.
 
 ### Conclusion
 - Sur des photos jamais vues, le modèle donne 26 %, avec 250 photos d’origine comme avec 715. La marge est de 13 % à 39 % sur 38 photos de test, de 18 % à 35 % sur 104. C’est au-dessus du hasard (8 %) et très loin de 83 %. Le chiffre de 83 % ne doit pas être cité comme la précision du modèle.
 - Les trois mesures refaites (26 %, 24 %, 26 %) restent dans leurs marges d’erreur. Aucun écart n’est établi entre elles.
 - Un seul entraînement par notebook, graine 12 : l’écart d’un entraînement à l’autre n’est pas mesuré.
 - Ajouter des photos n’a pas suffi. Le nombre de photos n’était pas le seul frein.
+- L’arrêt anticipé sur la perte de validation a gardé, ici, un modèle peu entraîné : la recette elle-même est à revoir.
 
 ### Prochaines étapes
-1. Recadrer l’empreinte avant de la classer.
-2. Essayer un fine-tuning plus large.
-3. Mesurer par validation croisée par groupes (`StratifiedGroupKFold`). Ce n’est pas encore fait. Elle donnerait une mesure plus stable qu’un seul test.
+1. Choisir le modèle sur la justesse de validation plutôt que sur la perte, annoncé avant d’être lancé, puis mesuré une seule fois sur le test.
+2. Recadrer l’empreinte avant de la classer.
+3. Essayer un fine-tuning plus large.
+4. Mesurer par validation croisée par groupes (`StratifiedGroupKFold`). Ce n’est pas encore fait. Elle donnerait une mesure plus stable qu’un seul test.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
