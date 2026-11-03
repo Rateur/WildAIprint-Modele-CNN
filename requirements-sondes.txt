@@ -1,0 +1,8 @@
+# Sondes linéaires (sondes_lineaires.ipynb, sondes_tour2.ipynb) : versions avec lesquelles elles ont tourné, Python 3.12, carte NVIDIA (CUDA 12.4)
+# pip install -r requirements-sondes.txt --extra-index-url https://download.pytorch.org/whl/cu124
+numpy==2.5.4
+pillow==13.0.0
+scikit-learn==1.9.1
+torch==2.6.0+cu124
+torchvision==0.21.0+cu124
+transformers==5.22.1
