@@ -41,14 +41,15 @@
 
 ### <a id="pitch"></a>Pitch & objectifs
 - **WildAIprint** est un modèle de vision par ordinateur qui classe des photos d’empreintes animales en 13 espèces.
-- Le modèle retenu est servi par l’API Flask (route `/predict`) du projet compagnon *WildAIprintApp*.
+- Le modèle retenu par l’équipe (ResNet50, `model.keras`) est servi par l’API Flask (route `/predict`) du projet compagnon *WildAIprintApp*. Le modèle repris en novembre 2026 n’y est pas encore branché.
 - Ce dépôt se concentre sur la dimension **IA / data engineering** : nettoyage du dataset, expérimentations de modélisation, évaluation et export des artefacts d’inférence.
-- **Chiffre à retenir : 26 % de bonnes réponses sur des photos jamais vues** (au hasard : 8 %). Les 83 % annoncés au départ venaient d’une fuite de données dans la séparation entre entraînement et validation. Le détail est dans [Résultats & évaluation](#resultats). Même score avec 715 photos d’origine au lieu de 250.
+- **Chiffre à retenir : 48 % de bonnes réponses sur 104 photos jamais vues** (au hasard : 8 %), avec le modèle repris en novembre 2026 : des réseaux pré-entraînés gelés et une régression logistique par-dessus. Le ResNet50 de l’équipe, ajusté sur le même jeu, fait 26 % sur les mêmes photos. Avec 250 photos d’origine, il faisait déjà 26 %, sur 38 photos de test. Les 83 % annoncés au départ venaient d’une fuite de données dans la séparation entre entraînement et validation. Le détail est dans [Résultats & évaluation](#resultats).
 - Le dépôt GitLab de l’équipe (application et CI) : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
 - Contenu du dépôt :
-  - cinq notebooks : transfert d’apprentissage ResNet50, CNN from scratch avec MLflow, et trois notebooks d’évaluation refaite en octobre 2026,
-  - trois fichiers `resultats_*.json` avec les mesures de l’évaluation refaite,
-  - `fetch_inat.py` et `build_dataset.py` pour reconstruire le jeu agrandi, et `inat_attributions.csv` pour les crédits des photos iNaturalist.
+  - sept notebooks : transfert d’apprentissage ResNet50, CNN from scratch avec MLflow, trois notebooks d’évaluation refaite en octobre 2026, et deux notebooks de sondes linéaires (le modèle repris) en novembre 2026,
+  - cinq fichiers `resultats_*.json` avec les mesures de l’évaluation refaite et du modèle repris,
+  - `fetch_inat.py` et `build_dataset.py` pour reconstruire le jeu agrandi, et `inat_attributions.csv` pour les crédits des photos iNaturalist,
+  - `requirements-sondes.txt` pour les deux notebooks de sondes.
 - `model.keras` et `class_names.json` sont produits par `pretrained_cnn_model.ipynb`. Ils ne sont pas versionnés ici. `model.keras` est dans le dépôt de l’application, via Git LFS.
 
 ### <a id="contexte"></a>Contexte pédagogique
@@ -62,11 +63,11 @@ Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
 | Contributeur | Profil GitHub | Rôles & Contributions principales |
 |---|---|---|
 | **Yasmine Sayad** | [@YasmineSAYAD](https://github.com/YasmineSAYAD) | **Conception & entraînement du modèle ResNet50 retenu pour la production** (Transfer Learning & Fine-Tuning en 2 phases, meilleure accuracy de validation à 0,83). Pilotage du dépôt applicatif principal. |
-| **Valentin Périès** | [@Rateur](https://github.com/Rateur) | **Data engineering & pipeline d’expérimentation** : nettoyage automatique et déduplication MD5 du dataset, modélisation CNN custom avec suivi des runs sous MLflow (`modeling.ipynb`), packaging des artefacts (`model.keras`, `class_names.json`) et intégration de l’inférence locale Flask. |
+| **Valentin Périès** | [@Rateur](https://github.com/Rateur) | **Data engineering & pipeline d’expérimentation** : nettoyage automatique et déduplication MD5 du dataset, modélisation CNN custom avec suivi des runs sous MLflow (`modeling.ipynb`), packaging des artefacts (`model.keras`, `class_names.json`) et intégration de l’inférence locale Flask. Évaluation refaite, jeu agrandi, puis reprise du modèle avec des sondes linéaires (octobre et novembre 2026). |
 | **Valentin Phan** | [@ValentinPhan](https://github.com/ValentinPhan) | Exploration des hyperparamètres, tests d'augmentation de données et évaluation comparative des métriques. |
 | **Brunel** | [@Brunel-ops](https://github.com/Brunel-ops) | Préparation des jeux de données, tests de robustesse et benchmarking des temps d'inférence. |
 
-> 📌 **Précision d'attribution** : Plusieurs architectures ont été expérimentées en parallèle par les membres de l’équipe. Le modèle final sélectionné pour l’application web est l'architecture **ResNet50 développée par Yasmine Sayad** (`pretrained_cnn_model.ipynb`). Le présent dépôt personnel documente les notebooks d’entraînement, l'instrumentation MLflow et les étapes de data engineering associées. L’évaluation refaite en octobre 2026 (`split_par_photo.ipynb`, `split_par_photo_preprocess.ipynb` et `split_par_photo_v2.ipynb`) est de Valentin Périès.
+> 📌 **Précision d'attribution** : Plusieurs architectures ont été expérimentées en parallèle par les membres de l’équipe. Le modèle final sélectionné pour l’application web est l'architecture **ResNet50 développée par Yasmine Sayad** (`pretrained_cnn_model.ipynb`). Le présent dépôt personnel documente les notebooks d’entraînement, l'instrumentation MLflow et les étapes de data engineering associées. L’évaluation refaite en octobre 2026 (`split_par_photo.ipynb`, `split_par_photo_preprocess.ipynb` et `split_par_photo_v2.ipynb`) et le modèle repris en novembre 2026 (`sondes_lineaires.ipynb` et `sondes_tour2.ipynb`) sont de Valentin Périès.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -116,6 +117,7 @@ Ce projet est le fruit d’un travail d'équipe réunissant 4 développeurs IA :
 - **Suivi des expériences** : MLflow (autolog activé dans `modeling.ipynb`, pour le premier CNN uniquement).
 - **Traitement d’images** : Pillow pour le nettoyage, l’audit d’intégrité et l’empreinte visuelle dHash ; couches Keras pour l’augmentation à la volée.
 - **Évaluation** : scikit-learn (exactitude, F1 macro, rapport de classification, matrice de confusion) et intervalles à 95 % par bootstrap avec NumPy.
+- **Modèle repris** : PyTorch, torchvision, transformers et scikit-learn (`requirements-sondes.txt`). Réseaux pré-entraînés gelés testés : ResNet50, ConvNeXt-Base, DINOv2, CLIP ViT-B/16, SigLIP-Base.
 - **Export** : `model.keras` et `class_names.json` pour l’API Flask de *WildAIprintApp*.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
@@ -245,6 +247,7 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 - **Suivi des métriques** : accuracy, loss, precision, recall, F1-score (macro) et matrice de confusion.
 - **Export** : sauvegarde des poids dans `model.keras` et de l’ordre des classes dans `class_names.json`.
 - **Limite connue** : ResNet50 attend des images centrées sur la moyenne d’ImageNet. Ce prétraitement a été testé ensuite, sans gain (voir [Résultats](#resultats)).
+- **Modèle repris** (novembre 2026) : une autre méthode, décrite dans [Résultats, point 5](#resultats). Il n’est pas encore branché dans l’application, qui utilise toujours ce ResNet50.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -259,6 +262,8 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 | `split_par_photo.ipynb` | Évaluation refaite par photo d’origine *(Valentin Périès, octobre 2026)* | Même architecture et même recette que `pretrained_cnn_model.ipynb`, modèle réentraîné. Rattache chaque variante à sa photo, regroupe les photos presque identiques (dHash), sépare par groupe en 70 / 15 / 15, utilise le test une seule fois, intervalles à 95 % par bootstrap. Écrit `resultats_split_par_photo.json` |
 | `split_par_photo_preprocess.ipynb` | Piste 1 : `preprocess_input` *(Valentin Périès, octobre 2026)* | Même séparation, même test, une seule ligne en plus : `tf.keras.applications.resnet50.preprocess_input`. Écrit `resultats_split_par_photo_preprocess.json` |
 | `split_par_photo_v2.ipynb` | Jeu agrandi : 715 photos d’origine *(Valentin Périès, octobre 2026)* | Même séparation (par photo d’origine, 70 / 15 / 15, variantes en entraînement seulement), même architecture et même recette, graine 12. Les 250 photos du projet et 465 photos iNaturalist, 104 photos de test. Écrit `resultats_split_par_photo_v2.json` |
+| `sondes_lineaires.ipynb` | Le modèle repris, tour 1 *(Valentin Périès, novembre 2026)* | Caractéristiques de réseaux pré-entraînés gelés (ResNet50, ConvNeXt-Base, DINOv2-Base, CLIP ViT-B/16, SigLIP-Base), chacun avec son prétraitement, et une régression logistique par-dessus. Même jeu, même séparation, même graine. Réseau et réglage choisis sur la validation seulement : DINOv2-Base en tête (40 %). Test : 37,5 %. Écrit `resultats_sondes.json` |
+| `sondes_tour2.ipynb` | Le modèle repris, tour 2 *(Valentin Périès, novembre 2026)* | DINOv2-Large, et DINOv2 avec la moyenne des zones de l’image, avec ou sans les variantes d’entraînement. DINOv2-Large en tête en validation (41,9 %). Test : 48 %. Écrit `resultats_sondes_tour2.json` |
 
 Étapes de l’entraînement d’origine (`pretrained_cnn_model.ipynb`, `modeling.ipynb`) :
 1. Chargement du dataset avec `image_dataset_from_directory` (split 80/20, batch 16, graine 12).
@@ -274,6 +279,12 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 4. Entraînement avec la même recette que le modèle retenu.
 5. Mesure unique sur le jeu de test, avec intervalle à 95 %.
 
+Étapes du modèle repris (`sondes_lineaires.ipynb`, `sondes_tour2.ipynb`) :
+1. Extraction des caractéristiques de chaque photo avec un réseau pré-entraîné gelé, et son prétraitement.
+2. Entraînement d’une régression logistique sur ces caractéristiques.
+3. Choix du réseau et du réglage sur la validation seulement.
+4. Mesure sur le jeu de test, une fois par tour.
+
 <p align="right"><a href="#top">Retour en haut</a></p>
 
 ---
@@ -286,8 +297,10 @@ Le modèle retenu pour l'application finale repose sur un réseau **ResNet50** p
 | Évaluation refaite | 70 / 15 / 15 par photo d’origine | 38 photos de test | 26 % (13 à 39 %) | 0,26 (0,11 à 0,33) |
 | Piste 1 : `preprocess_input` | idem | les mêmes 38 photos de test | 24 % (11 à 37 %) | 0,19 (0,07 à 0,26) |
 | Jeu agrandi : 715 photos d’origine | 70 / 15 / 15 par photo d’origine | 104 photos de test (8 par espèce) | 26 % (18 à 35 %) | 0,24 (0,16 à 0,31) |
+| Modèle repris, tour 1 : DINOv2-Base gelé + régression logistique | idem | les mêmes 104 photos de test | 37,5 % (28 à 47 %) | 0,38 |
+| **Modèle repris, tour 2 : DINOv2-Large gelé + régression logistique** | idem | les mêmes 104 photos de test | **48 % (38 à 58 %)** | **0,48 (0,38 à 0,56)** |
 
-Les intervalles sont à 95 %, par bootstrap (2 000 tirages). Au hasard, sur 13 espèces, l’exactitude serait de 8 %.
+Les intervalles sont à 95 %, par bootstrap (2 000 tirages). Au hasard, sur 13 espèces, l’exactitude serait de 8 %. Les trois dernières lignes portent sur les mêmes 104 photos de test.
 
 ### 1. Modèle retenu : 83 % en validation
 Le ResNet50 de `pretrained_cnn_model.ipynb` obtient 83 % d’exactitude et un F1 macro de 0,83 sur 300 images de validation.
@@ -348,20 +361,48 @@ Le contrôle des quasi-doublons (dHash) a signalé deux paires de photos d’esp
 
 Les deux tests (38 puis 104 photos) ne sont pas les mêmes, et leurs intervalles se recouvrent : presque trois fois plus de photos n’apportent aucun gain visible, au plus quelques points. La mesure est seulement plus précise : 18 à 35 % au lieu de 13 à 39 %.
 
-Une limite de la recette, la même qu’à l’origine : l’arrêt anticipé (`EarlyStopping`, `restore_best_weights`) garde les poids de la plus faible perte de validation. Ici, ce sont ceux de la première passe de fine-tuning : perte de validation 2,39 (2,56 au hasard), justesse de validation 20 %, alors qu’elle montait ensuite vers 30 %. Le modèle évalué est donc peu entraîné. Le nombre de photos n’était pas le seul frein. Pistes à tester : choisir le modèle sur la justesse de validation, recadrer l’empreinte avant de la classer, un fine-tuning plus large. Un seul entraînement : l’écart d’un entraînement à l’autre n’est pas mesuré.
+Une limite de la recette, la même qu’à l’origine : l’arrêt anticipé (`EarlyStopping`, `restore_best_weights`) garde les poids de la plus faible perte de validation. Ici, ce sont ceux de la première passe de fine-tuning : perte de validation 2,39 (2,56 au hasard), justesse de validation 20 %, alors qu’elle montait ensuite vers 30 %. Le modèle évalué est donc peu entraîné. Le nombre de photos n’était pas le seul frein. La section suivante change de méthode. Un seul entraînement : l’écart d’un entraînement à l’autre n’est pas mesuré.
+
+### 5. Le modèle repris : 48 %
+Après le jeu agrandi, Valentin Périès a repris le modèle avec une autre méthode (`sondes_lineaires.ipynb`, puis `sondes_tour2.ipynb`, novembre 2026). Au lieu d’ajuster le ResNet50 sur des pixels bruts, il extrait les caractéristiques de réseaux pré-entraînés gelés, chacun avec son propre prétraitement. Il entraîne ensuite dessus une régression logistique : une « sonde linéaire ».
+
+Ce qui ne change pas :
+- le même jeu (715 photos d’origine), la même séparation par photo d’origine, la même graine ;
+- le choix du réseau et du réglage se fait **sur la validation seulement** ;
+- le test ne sert qu’une fois par tour.
+
+**Tour 1** (`sondes_lineaires.ipynb`). Cinq candidats : ResNet50, ConvNeXt-Base, DINOv2-Base, CLIP ViT-B/16, SigLIP-Base. DINOv2-Base arrive en tête sur la validation (40 %). Sur 104 photos de test :
+- **37,5 %** de bonnes réponses (intervalle : 28 % à 47 %),
+- F1 macro de **0,38**.
+
+**Tour 2** (`sondes_tour2.ipynb`). DINOv2-Large, et DINOv2 avec la moyenne des zones de l’image, avec ou sans les variantes d’entraînement. DINOv2-Large arrive en tête sur la validation (41,9 %). Plusieurs réglages sont à égalité : le premier, dans l’ordre fixé d’avance, est retenu. Sur les mêmes 104 photos de test :
+- **48 %** de bonnes réponses (intervalle : 38 % à 58 %),
+- F1 macro de **0,48** (0,38 à 0,56),
+- 8 % au hasard.
+
+Par source : 48 % sur les 48 photos du projet (33 % à 63 %), 48 % sur les 56 photos iNaturalist (36 % à 61 %).
+
+Les trois scores (26 % pour le ResNet50 ajusté, 37,5 % et 48 % pour le modèle repris) sont mesurés sur les mêmes 104 photos de test : la comparaison tient. Le test a servi deux fois, une fois par tour. Les deux résultats sont publiés.
+
+Limites :
+- un seul entraînement : l’écart d’un entraînement à l’autre n’est pas mesuré ;
+- le test reste petit : 8 photos par espèce ;
+- l’application Flask utilise encore l’ancien modèle (`model.keras`), pas le nouveau.
+
+Fichiers : `sondes_lineaires.ipynb`, `sondes_tour2.ipynb`, `resultats_sondes.json`, `resultats_sondes_tour2.json` et `requirements-sondes.txt` (PyTorch, torchvision, transformers, scikit-learn).
 
 ### Conclusion
-- Sur des photos jamais vues, le modèle donne 26 %, avec 250 photos d’origine comme avec 715. La marge est de 13 % à 39 % sur 38 photos de test, de 18 % à 35 % sur 104. C’est au-dessus du hasard (8 %) et très loin de 83 %. Le chiffre de 83 % ne doit pas être cité comme la précision du modèle.
-- Les trois mesures refaites (26 %, 24 %, 26 %) restent dans leurs marges d’erreur. Aucun écart n’est établi entre elles.
-- Un seul entraînement par notebook, graine 12 : l’écart d’un entraînement à l’autre n’est pas mesuré.
-- Ajouter des photos n’a pas suffi. Le nombre de photos n’était pas le seul frein.
-- L’arrêt anticipé sur la perte de validation a gardé, ici, un modèle peu entraîné : la recette elle-même est à revoir.
+- Le modèle repris donne 48 % sur 104 photos de test jamais vues (38 % à 58 %), contre 8 % au hasard. C’est le meilleur résultat mesuré ici.
+- Le ResNet50 ajusté de l’équipe donne 26 % sur les mêmes photos (18 % à 35 %), et déjà 26 % sur 38 photos avec 250 photos d’origine. Les intervalles de 26 % et de 48 % ne se recouvrent pas. Même jeu, même séparation, même graine : seule la méthode change.
+- Les 83 % annoncés au départ venaient d’une fuite de données. Ce chiffre ne doit pas être cité comme la précision du modèle.
+- Les trois mesures refaites du ResNet50 (26 %, 24 %, 26 %) restent dans leurs marges d’erreur. Aucun écart n’est établi entre elles.
+- Ajouter des photos n’a pas suffi. L’arrêt anticipé sur la perte de validation a gardé, avec la recette ResNet50, un modèle peu entraîné.
+- Limites : un seul entraînement par notebook, un test de 8 photos par espèce, et l’application qui utilise encore l’ancien modèle.
 
 ### Prochaines étapes
-1. Choisir le modèle sur la justesse de validation plutôt que sur la perte, annoncé avant d’être lancé, puis mesuré une seule fois sur le test.
-2. Recadrer l’empreinte avant de la classer.
-3. Essayer un fine-tuning plus large.
-4. Mesurer par validation croisée par groupes (`StratifiedGroupKFold`). Ce n’est pas encore fait. Elle donnerait une mesure plus stable qu’un seul test.
+1. Recadrer l’empreinte avant de la classer.
+2. Brancher le nouveau modèle dans l’application Flask.
+3. Mesurer par validation croisée par groupes (`StratifiedGroupKFold`). Ce n’est pas encore fait. Elle donnerait une mesure plus stable qu’un seul test.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -371,7 +412,7 @@ Une limite de la recette, la même qu’à l’origine : l’arrêt anticipé (`
 
 ### 1. Prérequis
 - Python **3.10+** (environnement virtuel recommandé). Les deux premiers notebooks d’octobre 2026 ont tourné sous Python 3.13.
-- Les deux premiers notebooks d’octobre 2026 n’ont pas besoin de carte graphique : le processeur suffit, environ une heure chacun. `split_par_photo_v2.ipynb` a tourné sur carte graphique. Durée sur processeur : À confirmer.
+- Les deux premiers notebooks d’octobre 2026 n’ont pas besoin de carte graphique : le processeur suffit, environ une heure chacun. `split_par_photo_v2.ipynb` a tourné sur carte graphique. Durée sur processeur : À confirmer. Matériel et durée de `sondes_lineaires.ipynb` et `sondes_tour2.ipynb` : À confirmer.
 - Un jeu de données à fournir soi-même (étape 3).
 
 ### 2. Récupérer les notebooks et installer l’environnement
@@ -386,6 +427,8 @@ jupyter lab
 ```
 `jupyter lab` ouvre l’interface dans le navigateur. Ouvrez ensuite le notebook voulu.
 
+Pour `sondes_lineaires.ipynb` et `sondes_tour2.ipynb` : `pip install -r requirements-sondes.txt` (PyTorch, torchvision, transformers, scikit-learn).
+
 ### 3. Fournir son jeu de données
 Le dossier `dataset/` n’est pas dans le dépôt. Créez-le à la racine, avec un sous-dossier par espèce et vos photos dedans : `dataset/<espèce>/*.jpg`.
 
@@ -396,7 +439,7 @@ Les notebooks `split_par_photo*.ipynb` attendent les variantes augmentées dans 
 Vos effectifs seront différents de ceux de la section [Dataset](#dataset), donc vos résultats aussi.
 
 ### 4. Reconstruire le jeu agrandi
-Seulement pour `split_par_photo_v2.ipynb`. Les images ne sont pas dans le dépôt : `fetch_inat.py` retélécharge les 465 photos iNaturalist, `build_dataset.py` reconstruit le jeu, avec les mêmes cinq variantes. Les 250 photos du projet restent à fournir (étape 3).
+Seulement pour `split_par_photo_v2.ipynb` et les deux notebooks de sondes, qui prennent le même jeu. Les images ne sont pas dans le dépôt : `fetch_inat.py` retélécharge les 465 photos iNaturalist, `build_dataset.py` reconstruit le jeu, avec les mêmes cinq variantes. Les 250 photos du projet restent à fournir (étape 3).
 ```bash
 python fetch_inat.py
 python build_dataset.py dataset inat dataset-v2
@@ -408,6 +451,7 @@ Crédits : les photos iNaturalist appartiennent à leurs auteurs. Chaque auteur 
 - `pretrained_cnn_model.ipynb` : modèle retenu. Il écrit `model.keras` et `class_names.json` dans le dossier courant. Git les ignore.
 - `split_par_photo.ipynb` puis `split_par_photo_preprocess.ipynb` : évaluation refaite. Ils écrivent les fichiers `resultats_*.json`.
 - `split_par_photo_v2.ipynb` : jeu agrandi, après l’étape 4. Il écrit `resultats_split_par_photo_v2.json`.
+- `sondes_lineaires.ipynb` puis `sondes_tour2.ipynb` : le modèle repris, après l’étape 4. Ils écrivent `resultats_sondes.json` et `resultats_sondes_tour2.json`.
 
 <p align="right"><a href="#top">Retour en haut</a></p>
 
@@ -419,17 +463,22 @@ Crédits : les photos iNaturalist appartiennent à leurs auteurs. Chaque auteur 
 .
 ├── README.md
 ├── requirements.txt                        # versions qui ont produit les résultats
+├── requirements-sondes.txt                 # PyTorch, torchvision, transformers, scikit-learn
 ├── pretrained_cnn_model.ipynb              # ResNet50, modèle retenu
 ├── modeling.ipynb                          # nettoyage, augmentation, CNN from scratch, MLflow
 ├── split_par_photo.ipynb                   # évaluation refaite par photo d’origine
 ├── split_par_photo_preprocess.ipynb        # piste 1 : preprocess_input
 ├── split_par_photo_v2.ipynb                # jeu agrandi : 715 photos d’origine
+├── sondes_lineaires.ipynb                  # modèle repris, tour 1 : cinq réseaux gelés
+├── sondes_tour2.ipynb                      # modèle repris, tour 2 : DINOv2-Large, 48 %
 ├── fetch_inat.py                           # retélécharge les photos iNaturalist
 ├── build_dataset.py                        # reconstruit le jeu agrandi
 ├── inat_attributions.csv                   # auteur et licence de chaque photo iNaturalist
 ├── resultats_split_par_photo.json
 ├── resultats_split_par_photo_preprocess.json
 ├── resultats_split_par_photo_v2.json
+├── resultats_sondes.json
+├── resultats_sondes_tour2.json
 └── dataset/                                # à fournir, ignoré par Git
 ```
 
@@ -444,6 +493,7 @@ Git ignore aussi `model.keras`, `class_names.json`, `mlruns/` et `outputs/`.
 - Application WildAIprint (API Flask, front, Docker Compose) : [github.com/Rateur/wildaiprint-App](https://github.com/Rateur/wildaiprint-App).
 - Dépôt GitLab de l’équipe : [gitlab.com/yasmine-sayad-group/wildaiprintapp](https://gitlab.com/yasmine-sayad-group/wildaiprintapp).
 - ResNet50 pré-entraîné sur ImageNet, chargé avec `tf.keras.applications`.
+- Réseaux pré-entraînés gelés du modèle repris : ResNet50, ConvNeXt-Base, DINOv2-Base et DINOv2-Large, CLIP ViT-B/16, SigLIP-Base.
 - Photos de la galerie : Wikimedia Commons.
 - Photos d’empreintes du jeu agrandi : [iNaturalist](https://www.inaturalist.org), photos sous licence libre. Auteurs et licences dans `inat_attributions.csv`.
 
